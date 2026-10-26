@@ -1,0 +1,43 @@
+# Publish only the native app, tests, and public documentation.
+# Research, prototypes, screenshots and device reports stay local.
+/*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/ios/
+/ios/*
+!/ios/App/
+!/ios/Core/
+!/ios/SharedUI/
+!/ios/DocumentBridge/
+!/ios/KeyboardExtension/
+!/ios/Tests/
+!/ios/Config/
+!/ios/Package.swift
+!/ios/generate-project.py
+!/ios/ThreePad.xcodeproj/
+
+# Signing is supplied independently by each developer.
+/ios/Config/*
+!/ios/Config/Shared.xcconfig
+!/ios/Config/Local.xcconfig.example
+/ios/ThreePad.xcodeproj/*
+!/ios/ThreePad.xcodeproj/project.pbxproj
+!/ios/ThreePad.xcodeproj/xcshareddata/
+
+# Never publish local IDE state, build products, or credentials.
+**/xcuserdata/
+**/*.xcuserstate
+**/.DS_Store
+**/.build/
+**/.swiftpm/
+**/DerivedData/
+**/build/
+**/.env
+**/.env.*
+**/*.mobileprovision
+**/*.provisionprofile
+**/*.p12
+**/*.p8
+**/*.pem
+**/*.key

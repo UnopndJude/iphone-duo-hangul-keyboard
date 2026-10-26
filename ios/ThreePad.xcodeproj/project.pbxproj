@@ -1,0 +1,479 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02E65E1E4D60916FB4A4BAD4 /* Core/SymbolKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D15BE2893357ECDFACF076D /* Core/SymbolKeyboard.swift */; };
+		08F24D7881A5E942AFB1D773 /* SharedUI/KeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77BFD5AEEF24C34DE6162521 /* SharedUI/KeyboardView.swift */; };
+		13E9F7352579FAAF77D9E1A5 /* Core/GestureClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4618294552B9C07BEC64A5E2 /* Core/GestureClassifier.swift */; };
+		1B0D9B63D3972CA1374795DC /* App/HostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C256996E2E60E3232611B10 /* App/HostViewController.swift */; };
+		1F6B7FBAB20EDD416E8B40C5 /* App/PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 190B156325615D3BEE8D253F /* App/PrivacyInfo.xcprivacy */; };
+		2327CAA3B07356E55CAD5B5E /* App/AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B92B2D30452B74B4F924E4 /* App/AppDelegate.swift */; };
+		2CA82D1A277ED937F4352C94 /* SharedUI/KeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77BFD5AEEF24C34DE6162521 /* SharedUI/KeyboardView.swift */; };
+		2E674DD0582348A82260812B /* ThreePadKeyboard.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C19B5018112238C0FD1B2857 /* ThreePadKeyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		33DBB2B262E05622288851C4 /* Core/GestureClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4618294552B9C07BEC64A5E2 /* Core/GestureClassifier.swift */; };
+		4460F0199954040157164474 /* KeyboardExtension/KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA05BA0C4532BDD72DAFDB0A /* KeyboardExtension/KeyboardViewController.swift */; };
+		446EF0A7007A6E20160C9DF7 /* Core/ThreePadMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE530C87B0E258DFE7EBFA51 /* Core/ThreePadMapping.swift */; };
+		4D2508AA8D279AFA56F0EB3C /* DocumentBridge/DocumentSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B112D06F73E2E2F28461A797 /* DocumentBridge/DocumentSession.swift */; };
+		50861B147FB13453B018FE04 /* Core/JoystickMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B77D0BF81544A9B2FBF712 /* Core/JoystickMapping.swift */; };
+		669A6E306F81739DC6D07AE9 /* Core/ThreePadMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE530C87B0E258DFE7EBFA51 /* Core/ThreePadMapping.swift */; };
+		67E0C2D684AA29332E342DE7 /* App/ScenicBackdropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A54C3E770616D2C2F56BF4 /* App/ScenicBackdropView.swift */; };
+		68DA7EF997D4769ACE40BBD9 /* Core/SymbolLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB5BFAFDF9EB352EC9DE407 /* Core/SymbolLayout.swift */; };
+		87ACFB0A2990C5524AF4459E /* Core/EnglishLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A9FC1409C6ED41B02B01C6 /* Core/EnglishLayout.swift */; };
+		AA1B580BD2EB6DD001A74023 /* Core/KeyboardSizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5BA1308A9D5362DA846CBA /* Core/KeyboardSizing.swift */; };
+		89349A834D28208893C59AA4 /* Core/AnchoredGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2588BACCC4D67776E9C18BB /* Core/AnchoredGesture.swift */; };
+		8BB82A9685DB3370F0BF0B19 /* Core/EnglishKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0365571B44D45A54DE105DB9 /* Core/EnglishKeyboard.swift */; };
+		9399BB08DB7FDC7903B1EF51 /* Core/HangulComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24FF6510DF4E7BC46C14B40 /* Core/HangulComposer.swift */; };
+		97A57C5AE79647B3F1C0E5B2 /* Core/ThreePadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA73DBE453FD617A246292C /* Core/ThreePadModel.swift */; };
+		A087710EAFA4E6C50830B2FA /* Core/JoystickMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B77D0BF81544A9B2FBF712 /* Core/JoystickMapping.swift */; };
+		B22871FFA15E108B0A535639 /* App/SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C478A0ECA8C731A86E16AA1C /* App/SceneDelegate.swift */; };
+		B8060A7EA9C74A76E9270E70 /* Core/EnglishKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0365571B44D45A54DE105DB9 /* Core/EnglishKeyboard.swift */; };
+		BDD1AC7EA1E3FA4A780B3D86 /* Core/HangulComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24FF6510DF4E7BC46C14B40 /* Core/HangulComposer.swift */; };
+		C176F01D3F6EE5DEFDBAD893 /* Core/ThreePadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA73DBE453FD617A246292C /* Core/ThreePadModel.swift */; };
+		CFA3C8C881B978431338E3A9 /* Core/AnchoredGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2588BACCC4D67776E9C18BB /* Core/AnchoredGesture.swift */; };
+		E42D06AB50524B91ADA6255A /* App/PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 190B156325615D3BEE8D253F /* App/PrivacyInfo.xcprivacy */; };
+		ED84593077A665F36FC58EB0 /* Core/SymbolLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB5BFAFDF9EB352EC9DE407 /* Core/SymbolLayout.swift */; };
+		F18A2AA53235168B4B741C5E /* Core/SymbolKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D15BE2893357ECDFACF076D /* Core/SymbolKeyboard.swift */; };
+		FE405A45034A37ACA75D470C /* Core/EnglishLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A9FC1409C6ED41B02B01C6 /* Core/EnglishLayout.swift */; };
+		DDA0DACB727C234793FD5810 /* Core/KeyboardSizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5BA1308A9D5362DA846CBA /* Core/KeyboardSizing.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		339EA6C3E9F8F78DD89B547B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 244210E48437B6556980A702 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 39993DAD3B378011698C3486;
+			remoteInfo = ThreePadKeyboard;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8336626A588BFF7E48225BCB /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2E674DD0582348A82260812B /* ThreePadKeyboard.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0365571B44D45A54DE105DB9 /* Core/EnglishKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/EnglishKeyboard.swift; sourceTree = "<group>"; };
+		0AA73DBE453FD617A246292C /* Core/ThreePadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/ThreePadModel.swift; sourceTree = "<group>"; };
+		190B156325615D3BEE8D253F /* App/PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = App/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		4618294552B9C07BEC64A5E2 /* Core/GestureClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/GestureClassifier.swift; sourceTree = "<group>"; };
+		77BFD5AEEF24C34DE6162521 /* SharedUI/KeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedUI/KeyboardView.swift; sourceTree = "<group>"; };
+		8D15BE2893357ECDFACF076D /* Core/SymbolKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/SymbolKeyboard.swift; sourceTree = "<group>"; };
+		95A3A442A50B859733B1856E /* ThreePad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThreePad.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C256996E2E60E3232611B10 /* App/HostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/HostViewController.swift; sourceTree = "<group>"; };
+		B112D06F73E2E2F28461A797 /* DocumentBridge/DocumentSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBridge/DocumentSession.swift; sourceTree = "<group>"; };
+		B3A9FC1409C6ED41B02B01C6 /* Core/EnglishLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/EnglishLayout.swift; sourceTree = "<group>"; };
+		8C5BA1308A9D5362DA846CBA /* Core/KeyboardSizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/KeyboardSizing.swift; sourceTree = "<group>"; };
+		B5B89880D0AE0D513F7FF55C /* Config/Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Shared.xcconfig; sourceTree = "<group>"; };
+		C19B5018112238C0FD1B2857 /* ThreePadKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ThreePadKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C24FF6510DF4E7BC46C14B40 /* Core/HangulComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/HangulComposer.swift; sourceTree = "<group>"; };
+		C2588BACCC4D67776E9C18BB /* Core/AnchoredGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/AnchoredGesture.swift; sourceTree = "<group>"; };
+		C478A0ECA8C731A86E16AA1C /* App/SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/SceneDelegate.swift; sourceTree = "<group>"; };
+		C4A54C3E770616D2C2F56BF4 /* App/ScenicBackdropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/ScenicBackdropView.swift; sourceTree = "<group>"; };
+		C6B77D0BF81544A9B2FBF712 /* Core/JoystickMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/JoystickMapping.swift; sourceTree = "<group>"; };
+		CDB5BFAFDF9EB352EC9DE407 /* Core/SymbolLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/SymbolLayout.swift; sourceTree = "<group>"; };
+		E72685212AF966A85FF3F9E9 /* App/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = App/Info.plist; sourceTree = "<group>"; };
+		E8B92B2D30452B74B4F924E4 /* App/AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/AppDelegate.swift; sourceTree = "<group>"; };
+		EA05BA0C4532BDD72DAFDB0A /* KeyboardExtension/KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardExtension/KeyboardViewController.swift; sourceTree = "<group>"; };
+		EE530C87B0E258DFE7EBFA51 /* Core/ThreePadMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/ThreePadMapping.swift; sourceTree = "<group>"; };
+		FA0EDA251DD1E8A992E41144 /* KeyboardExtension/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = KeyboardExtension/Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0ABC94B57C24E3EC87D2493A /* DocumentBridge */ = {
+			isa = PBXGroup;
+			children = (
+				B112D06F73E2E2F28461A797 /* DocumentBridge/DocumentSession.swift */,
+			);
+			name = DocumentBridge;
+			sourceTree = "<group>";
+		};
+		13C4608B5138EBE9B3A45A55 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				E8B92B2D30452B74B4F924E4 /* App/AppDelegate.swift */,
+				9C256996E2E60E3232611B10 /* App/HostViewController.swift */,
+				E72685212AF966A85FF3F9E9 /* App/Info.plist */,
+				190B156325615D3BEE8D253F /* App/PrivacyInfo.xcprivacy */,
+				C478A0ECA8C731A86E16AA1C /* App/SceneDelegate.swift */,
+				C4A54C3E770616D2C2F56BF4 /* App/ScenicBackdropView.swift */,
+			);
+			name = App;
+			sourceTree = "<group>";
+		};
+		17F3BF0E837DF46250DA3F56 /* KeyboardExtension */ = {
+			isa = PBXGroup;
+			children = (
+				FA0EDA251DD1E8A992E41144 /* KeyboardExtension/Info.plist */,
+				EA05BA0C4532BDD72DAFDB0A /* KeyboardExtension/KeyboardViewController.swift */,
+			);
+			name = KeyboardExtension;
+			sourceTree = "<group>";
+		};
+		1B3039B2E15DD2AB7EA6156D /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B5B89880D0AE0D513F7FF55C /* Config/Shared.xcconfig */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		2BA340BF271E1A0E2D6B10FC /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				C2588BACCC4D67776E9C18BB /* Core/AnchoredGesture.swift */,
+				0365571B44D45A54DE105DB9 /* Core/EnglishKeyboard.swift */,
+				B3A9FC1409C6ED41B02B01C6 /* Core/EnglishLayout.swift */,
+				8C5BA1308A9D5362DA846CBA /* Core/KeyboardSizing.swift */,
+				4618294552B9C07BEC64A5E2 /* Core/GestureClassifier.swift */,
+				C24FF6510DF4E7BC46C14B40 /* Core/HangulComposer.swift */,
+				C6B77D0BF81544A9B2FBF712 /* Core/JoystickMapping.swift */,
+				8D15BE2893357ECDFACF076D /* Core/SymbolKeyboard.swift */,
+				CDB5BFAFDF9EB352EC9DE407 /* Core/SymbolLayout.swift */,
+				EE530C87B0E258DFE7EBFA51 /* Core/ThreePadMapping.swift */,
+				0AA73DBE453FD617A246292C /* Core/ThreePadModel.swift */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		AA0596BBDB4DCC95D5D4F10C = {
+			isa = PBXGroup;
+			children = (
+				13C4608B5138EBE9B3A45A55 /* App */,
+				2BA340BF271E1A0E2D6B10FC /* Core */,
+				CBD000ABB6498B81F66B3DD9 /* SharedUI */,
+				0ABC94B57C24E3EC87D2493A /* DocumentBridge */,
+				17F3BF0E837DF46250DA3F56 /* KeyboardExtension */,
+				1B3039B2E15DD2AB7EA6156D /* Config */,
+				AE7805B56D1DCAFAA071416F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AE7805B56D1DCAFAA071416F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				95A3A442A50B859733B1856E /* ThreePad.app */,
+				C19B5018112238C0FD1B2857 /* ThreePadKeyboard.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CBD000ABB6498B81F66B3DD9 /* SharedUI */ = {
+			isa = PBXGroup;
+			children = (
+				77BFD5AEEF24C34DE6162521 /* SharedUI/KeyboardView.swift */,
+			);
+			name = SharedUI;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		38C83FEC864CFA05A1FFBC8E /* ThreePad */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 675BA9F151C3AF1231C577E8 /* Build configuration list for PBXNativeTarget "ThreePad" */;
+			buildPhases = (
+				C2B388915E96ACADBE694606 /* Sources */,
+				AD63922EF426B0E6233824F5 /* Resources */,
+				8336626A588BFF7E48225BCB /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1658B023D7F517239834C3A0 /* PBXTargetDependency */,
+			);
+			name = ThreePad;
+			productName = ThreePad;
+			productReference = 95A3A442A50B859733B1856E /* ThreePad.app */;
+			productType = "com.apple.product-type.application";
+		};
+		39993DAD3B378011698C3486 /* ThreePadKeyboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03DE7F5C9E0C4C54B6428CF5 /* Build configuration list for PBXNativeTarget "ThreePadKeyboard" */;
+			buildPhases = (
+				A8B69EA1C6346010701165FF /* Sources */,
+				D9429F91F9042682A0D17389 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ThreePadKeyboard;
+			productName = ThreePadKeyboard;
+			productReference = C19B5018112238C0FD1B2857 /* ThreePadKeyboard.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		244210E48437B6556980A702 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					38C83FEC864CFA05A1FFBC8E = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					39993DAD3B378011698C3486 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 1922B098E983995960BE56B0 /* Build configuration list for PBXProject "ThreePad" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = ko;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				ko,
+				en,
+				Base,
+			);
+			mainGroup = AA0596BBDB4DCC95D5D4F10C;
+			productRefGroup = AE7805B56D1DCAFAA071416F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				38C83FEC864CFA05A1FFBC8E /* ThreePad */,
+				39993DAD3B378011698C3486 /* ThreePadKeyboard */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AD63922EF426B0E6233824F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E42D06AB50524B91ADA6255A /* App/PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9429F91F9042682A0D17389 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F6B7FBAB20EDD416E8B40C5 /* App/PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A8B69EA1C6346010701165FF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4460F0199954040157164474 /* KeyboardExtension/KeyboardViewController.swift in Sources */,
+				4D2508AA8D279AFA56F0EB3C /* DocumentBridge/DocumentSession.swift in Sources */,
+				CFA3C8C881B978431338E3A9 /* Core/AnchoredGesture.swift in Sources */,
+				B8060A7EA9C74A76E9270E70 /* Core/EnglishKeyboard.swift in Sources */,
+				87ACFB0A2990C5524AF4459E /* Core/EnglishLayout.swift in Sources */,
+				AA1B580BD2EB6DD001A74023 /* Core/KeyboardSizing.swift in Sources */,
+				33DBB2B262E05622288851C4 /* Core/GestureClassifier.swift in Sources */,
+				9399BB08DB7FDC7903B1EF51 /* Core/HangulComposer.swift in Sources */,
+				50861B147FB13453B018FE04 /* Core/JoystickMapping.swift in Sources */,
+				F18A2AA53235168B4B741C5E /* Core/SymbolKeyboard.swift in Sources */,
+				68DA7EF997D4769ACE40BBD9 /* Core/SymbolLayout.swift in Sources */,
+				669A6E306F81739DC6D07AE9 /* Core/ThreePadMapping.swift in Sources */,
+				97A57C5AE79647B3F1C0E5B2 /* Core/ThreePadModel.swift in Sources */,
+				08F24D7881A5E942AFB1D773 /* SharedUI/KeyboardView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C2B388915E96ACADBE694606 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2327CAA3B07356E55CAD5B5E /* App/AppDelegate.swift in Sources */,
+				1B0D9B63D3972CA1374795DC /* App/HostViewController.swift in Sources */,
+				B22871FFA15E108B0A535639 /* App/SceneDelegate.swift in Sources */,
+				67E0C2D684AA29332E342DE7 /* App/ScenicBackdropView.swift in Sources */,
+				89349A834D28208893C59AA4 /* Core/AnchoredGesture.swift in Sources */,
+				8BB82A9685DB3370F0BF0B19 /* Core/EnglishKeyboard.swift in Sources */,
+				FE405A45034A37ACA75D470C /* Core/EnglishLayout.swift in Sources */,
+				DDA0DACB727C234793FD5810 /* Core/KeyboardSizing.swift in Sources */,
+				13E9F7352579FAAF77D9E1A5 /* Core/GestureClassifier.swift in Sources */,
+				BDD1AC7EA1E3FA4A780B3D86 /* Core/HangulComposer.swift in Sources */,
+				A087710EAFA4E6C50830B2FA /* Core/JoystickMapping.swift in Sources */,
+				02E65E1E4D60916FB4A4BAD4 /* Core/SymbolKeyboard.swift in Sources */,
+				ED84593077A665F36FC58EB0 /* Core/SymbolLayout.swift in Sources */,
+				446EF0A7007A6E20160C9DF7 /* Core/ThreePadMapping.swift in Sources */,
+				C176F01D3F6EE5DEFDBAD893 /* Core/ThreePadModel.swift in Sources */,
+				2CA82D1A277ED937F4352C94 /* SharedUI/KeyboardView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1658B023D7F517239834C3A0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 39993DAD3B378011698C3486 /* ThreePadKeyboard */;
+			targetProxy = 339EA6C3E9F8F78DD89B547B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		14DCBEAF8F5BFB34A7947BBD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5B89880D0AE0D513F7FF55C /* Config/Shared.xcconfig */;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+			};
+			name = Debug;
+		};
+		184B519F8E1416CCE38CFFD7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5B89880D0AE0D513F7FF55C /* Config/Shared.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3B34A02FB42F6B32288F5BEC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5B89880D0AE0D513F7FF55C /* Config/Shared.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = KeyboardExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).Keyboard";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		A824290273A346217D9BE6F4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5B89880D0AE0D513F7FF55C /* Config/Shared.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_TESTABILITY = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		B7EFA3612278AC65EE7FD0FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5B89880D0AE0D513F7FF55C /* Config/Shared.xcconfig */;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+			};
+			name = Release;
+		};
+		F57DED99CFB9B95ED69A6026 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5B89880D0AE0D513F7FF55C /* Config/Shared.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = KeyboardExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).Keyboard";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		03DE7F5C9E0C4C54B6428CF5 /* Build configuration list for PBXNativeTarget "ThreePadKeyboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F57DED99CFB9B95ED69A6026 /* Debug */,
+				3B34A02FB42F6B32288F5BEC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1922B098E983995960BE56B0 /* Build configuration list for PBXProject "ThreePad" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				184B519F8E1416CCE38CFFD7 /* Debug */,
+				A824290273A346217D9BE6F4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		675BA9F151C3AF1231C577E8 /* Build configuration list for PBXNativeTarget "ThreePad" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				14DCBEAF8F5BFB34A7947BBD /* Debug */,
+				B7EFA3612278AC65EE7FD0FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 244210E48437B6556980A702 /* Project object */;
+}
