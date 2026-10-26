@@ -1,0 +1,41 @@
+ios/KeyboardExtension/KeyboardViewController.swift
+  s_a5e1472697f7cb::t_96c37c3bbb7a3e 32-36,127
+ios/App/HostViewController.swift
+  s_a5e1472697f7cb::t_0ae045b55a1b13 6-7,69-89,146-149
+ios/SharedUI/KeyboardView.swift
+  s_a5e1472697f7cb::t_96c37c3bbb7a3e 7,46,515,530,542-558,628,633,643
+  s_a5e1472697f7cb::t_0ae045b55a1b13 198
+ios/Tests/CoreTests/SpaceCursorGestureTests.swift
+  s_a5e1472697f7cb::t_0ae045b55a1b13 1-28
+ios/Tests/DocumentTests/DocumentSessionTests.swift
+  s_a5e1472697f7cb::t_0ae045b55a1b13 13,49-61,397-437
+  s_a5e1472697f7cb::t_21510c9338c6e1 438
+ios/Core/SpaceCursorGesture.swift
+  s_a5e1472697f7cb::t_96c37c3bbb7a3e 1-31
+ios/ThreePad.xcodeproj/project.pbxproj
+  s_a5e1472697f7cb::t_96c37c3bbb7a3e 27,43,82,144,291,315
+ios/DocumentBridge/DocumentSession.swift
+  s_a5e1472697f7cb::t_96c37c3bbb7a3e 16,75-97
+  s_a5e1472697f7cb::t_f15b7046d1c38d 98-99
+ios/Config/Shared.xcconfig
+  s_a5e1472697f7cb::t_96c37c3bbb7a3e 7
+README.md
+  s_a5e1472697f7cb::t_87cefa728c01a0 15,72
+  s_a5e1472697f7cb::t_bf7b83c942e9d7 73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3e0098f70d3d8f34fc0846076648422f5e58265b",
+  "prompts": {},
+  "sessions": {
+    "s_a5e1472697f7cb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a166a2-9f2b-75c3-b30d-57ae412b986c",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "UnopndJude <101383622+UnopndJude@users.noreply.github.com>"
+    }
+  }
+}
