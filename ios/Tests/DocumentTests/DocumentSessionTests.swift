@@ -10,6 +10,7 @@ private final class TestDocument: KeyboardDocument {
     var mark: Range<Int>?
     var deleteCalls = 0
     var insertCalls = 0
+    var cursorOffsets: [Int] = []
     var unmarkCalls = 0
     var markedRanges: [NSRange] = []
     var hidesContext = false
@@ -43,6 +44,19 @@ private final class TestDocument: KeyboardDocument {
         let inserted = normalizesMarkedNewlines && mark != nil ? value.replacingOccurrences(of: "\n", with: " ") : value
         chars.replaceSubrange(range, with: Array(inserted))
         text = String(chars); cursor = range.lowerBound + inserted.count
+        selectionLength = 0; mark = nil; onWrite?()
+    }
+    func adjustTextPosition(byCharacterOffset offset: Int) {
+        cursorOffsets.append(offset)
+        let start = String(text.prefix(cursor)).utf16.count
+        let target = max(0, min(text.utf16.count, start + offset))
+        var length = 0
+        cursor = 0
+        for character in text {
+            let next = length + String(character).utf16.count
+            guard next <= target else { break }
+            length = next; cursor += 1
+        }
         selectionLength = 0; mark = nil; onWrite?()
     }
     func deleteBackward() {
@@ -378,6 +392,48 @@ final class DocumentSessionTests: XCTestCase {
         input([.deleteBlock], s, d)
         XCTAssertEqual(d.text, "")
         XCTAssertFalse(s.apply(.deleteBlock, to: d))
+    }
+
+    func testCursorSlideCommitsHangulWithoutSpaceAndInsertsAtNewPosition() {
+        let d = TestDocument(), s = DocumentSession()
+        input(ga + [.jamo("ㄴ"), .jamo("ㅏ")], s, d)
+        XCTAssertEqual(d.text, "가나")
+        s.moveCursor(by: -1, in: d)
+        XCTAssertEqual(d.text, "가나")
+        XCTAssertEqual(d.cursor, 1)
+        XCTAssertNil(d.mark)
+        XCTAssertEqual(s.composition, "")
+        input([.literal("!")], s, d)
+        XCTAssertEqual(d.text, "가!나")
+        s.moveCursor(by: 1, in: d)
+        XCTAssertEqual(d.cursor, 3)
+    }
+
+    func testCursorSlideCrossesWholeEmojiAndStopsAtDocumentEdges() {
+        let d = TestDocument(), s = DocumentSession()
+        d.text = "가👨‍👩‍👧‍👦é나"; d.cursor = d.text.count
+        s.moveCursor(by: -2, in: d)
+        XCTAssertEqual(d.cursor, 2)
+        s.moveCursor(by: -1, in: d)
+        XCTAssertEqual(d.cursor, 1)
+        XCTAssertEqual(d.cursorOffsets.last, -"👨‍👩‍👧‍👦".utf16.count)
+        s.moveCursor(by: -32, in: d)
+        XCTAssertEqual(d.cursor, 0)
+        s.moveCursor(by: 32, in: d)
+        XCTAssertEqual(d.cursor, d.text.count)
+        XCTAssertEqual(d.insertCalls, 0)
+        XCTAssertEqual(d.deleteCalls, 0)
+    }
+
+    func testCursorSlideCallbacksAndUnknownContextAreBounded() {
+        let d = TestDocument(), s = DocumentSession()
+        input(ga, s, d)
+        d.onWrite = { XCTAssertFalse(s.synchronize(with: d)) }
+        s.moveCursor(by: -1, in: d)
+        XCTAssertFalse(s.synchronize(with: d))
+        d.hidesContext = true
+        s.moveCursor(by: 30, in: d)
+        XCTAssertEqual(d.cursorOffsets.last, 1)
     }
 
 }

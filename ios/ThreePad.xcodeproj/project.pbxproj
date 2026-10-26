@@ -24,6 +24,7 @@
 		67E0C2D684AA29332E342DE7 /* App/ScenicBackdropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A54C3E770616D2C2F56BF4 /* App/ScenicBackdropView.swift */; };
 		68DA7EF997D4769ACE40BBD9 /* Core/SymbolLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB5BFAFDF9EB352EC9DE407 /* Core/SymbolLayout.swift */; };
 		87ACFB0A2990C5524AF4459E /* Core/EnglishLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A9FC1409C6ED41B02B01C6 /* Core/EnglishLayout.swift */; };
+		E1A769DE32C0B1E452125A52 /* Core/SpaceCursorGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2992A23368CE646E0E01632 /* Core/SpaceCursorGesture.swift */; };
 		AA1B580BD2EB6DD001A74023 /* Core/KeyboardSizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5BA1308A9D5362DA846CBA /* Core/KeyboardSizing.swift */; };
 		89349A834D28208893C59AA4 /* Core/AnchoredGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2588BACCC4D67776E9C18BB /* Core/AnchoredGesture.swift */; };
 		8BB82A9685DB3370F0BF0B19 /* Core/EnglishKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0365571B44D45A54DE105DB9 /* Core/EnglishKeyboard.swift */; };
@@ -39,6 +40,7 @@
 		ED84593077A665F36FC58EB0 /* Core/SymbolLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB5BFAFDF9EB352EC9DE407 /* Core/SymbolLayout.swift */; };
 		F18A2AA53235168B4B741C5E /* Core/SymbolKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D15BE2893357ECDFACF076D /* Core/SymbolKeyboard.swift */; };
 		FE405A45034A37ACA75D470C /* Core/EnglishLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A9FC1409C6ED41B02B01C6 /* Core/EnglishLayout.swift */; };
+		C4B0FE87FCE4BE7B70BA749B /* Core/SpaceCursorGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2992A23368CE646E0E01632 /* Core/SpaceCursorGesture.swift */; };
 		DDA0DACB727C234793FD5810 /* Core/KeyboardSizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5BA1308A9D5362DA846CBA /* Core/KeyboardSizing.swift */; };
 /* End PBXBuildFile section */
 
@@ -77,6 +79,7 @@
 		9C256996E2E60E3232611B10 /* App/HostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/HostViewController.swift; sourceTree = "<group>"; };
 		B112D06F73E2E2F28461A797 /* DocumentBridge/DocumentSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBridge/DocumentSession.swift; sourceTree = "<group>"; };
 		B3A9FC1409C6ED41B02B01C6 /* Core/EnglishLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/EnglishLayout.swift; sourceTree = "<group>"; };
+		D2992A23368CE646E0E01632 /* Core/SpaceCursorGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/SpaceCursorGesture.swift; sourceTree = "<group>"; };
 		8C5BA1308A9D5362DA846CBA /* Core/KeyboardSizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/KeyboardSizing.swift; sourceTree = "<group>"; };
 		B5B89880D0AE0D513F7FF55C /* Config/Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Shared.xcconfig; sourceTree = "<group>"; };
 		C19B5018112238C0FD1B2857 /* ThreePadKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ThreePadKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,6 +141,7 @@
 				C2588BACCC4D67776E9C18BB /* Core/AnchoredGesture.swift */,
 				0365571B44D45A54DE105DB9 /* Core/EnglishKeyboard.swift */,
 				B3A9FC1409C6ED41B02B01C6 /* Core/EnglishLayout.swift */,
+				D2992A23368CE646E0E01632 /* Core/SpaceCursorGesture.swift */,
 				8C5BA1308A9D5362DA846CBA /* Core/KeyboardSizing.swift */,
 				4618294552B9C07BEC64A5E2 /* Core/GestureClassifier.swift */,
 				C24FF6510DF4E7BC46C14B40 /* Core/HangulComposer.swift */,
@@ -284,6 +288,7 @@
 				CFA3C8C881B978431338E3A9 /* Core/AnchoredGesture.swift in Sources */,
 				B8060A7EA9C74A76E9270E70 /* Core/EnglishKeyboard.swift in Sources */,
 				87ACFB0A2990C5524AF4459E /* Core/EnglishLayout.swift in Sources */,
+				E1A769DE32C0B1E452125A52 /* Core/SpaceCursorGesture.swift in Sources */,
 				AA1B580BD2EB6DD001A74023 /* Core/KeyboardSizing.swift in Sources */,
 				33DBB2B262E05622288851C4 /* Core/GestureClassifier.swift in Sources */,
 				9399BB08DB7FDC7903B1EF51 /* Core/HangulComposer.swift in Sources */,
@@ -307,6 +312,7 @@
 				89349A834D28208893C59AA4 /* Core/AnchoredGesture.swift in Sources */,
 				8BB82A9685DB3370F0BF0B19 /* Core/EnglishKeyboard.swift in Sources */,
 				FE405A45034A37ACA75D470C /* Core/EnglishLayout.swift in Sources */,
+				C4B0FE87FCE4BE7B70BA749B /* Core/SpaceCursorGesture.swift in Sources */,
 				DDA0DACB727C234793FD5810 /* Core/KeyboardSizing.swift in Sources */,
 				13E9F7352579FAAF77D9E1A5 /* Core/GestureClassifier.swift in Sources */,
 				BDD1AC7EA1E3FA4A780B3D86 /* Core/HangulComposer.swift in Sources */,

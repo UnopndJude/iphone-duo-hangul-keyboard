@@ -3,6 +3,8 @@ import UIKit
 /// A containing app for installation guidance and an offline keyboard practice area.
 final class HostViewController: UIViewController {
     private var model = ThreePadModel()
+    private var practicePrefix = ""
+    private var practiceSuffix = ""
     private let keyboard = KeyboardView()
     private let scenery = ScenicBackdropView()
     private let titleLabel = UILabel()
@@ -64,7 +66,27 @@ final class HostViewController: UIViewController {
         keyboard.accessibilityIdentifier = "practice-keyboard"
         keyboard.onAction = { [weak self] action in
             guard let self else { return }
-            _ = self.model.apply(action)
+            if self.model.text.isEmpty, action == .delete || action == .deleteBlock {
+                let count = action == .deleteBlock ? DeletionBlock.count(before: self.practicePrefix) : min(1, self.practicePrefix.count)
+                self.practicePrefix = String(self.practicePrefix.dropLast(count))
+            } else {
+                _ = self.model.apply(action)
+            }
+            self.refreshPractice()
+        }
+        keyboard.onMoveCursor = { [weak self] steps in
+            guard let self else { return }
+            self.practicePrefix += self.model.text
+            self.model.reset()
+            if steps < 0 {
+                let moved = String(self.practicePrefix.suffix(-steps))
+                self.practicePrefix = String(self.practicePrefix.dropLast(moved.count))
+                self.practiceSuffix = moved + self.practiceSuffix
+            } else {
+                let moved = String(self.practiceSuffix.prefix(steps))
+                self.practiceSuffix = String(self.practiceSuffix.dropFirst(moved.count))
+                self.practicePrefix += moved
+            }
             self.refreshPractice()
         }
         keyboard.onHelp = { [weak self] in self?.showGestureHelp() }
@@ -121,10 +143,10 @@ final class HostViewController: UIViewController {
     }
 
     private func refreshPractice() {
-        output.text = model.text
-        if !output.text.isEmpty {
-            output.scrollRangeToVisible(NSRange(location: (output.text as NSString).length, length: 0))
-        }
+        output.text = practicePrefix + model.text + practiceSuffix
+        let cursor = NSRange(location: (practicePrefix + model.text).utf16.count, length: 0)
+        output.selectedRange = cursor
+        output.scrollRangeToVisible(cursor)
         keyboard.update(target: model.target, canUndoModifier: model.canUndoModifier)
     }
 

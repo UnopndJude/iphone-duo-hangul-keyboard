@@ -13,6 +13,7 @@ public protocol KeyboardDocument: AnyObject {
     func setMarkedText(_ text: String, selectedRange: NSRange)
     func unmarkText()
     func insertText(_ text: String)
+    func adjustTextPosition(byCharacterOffset offset: Int)
     func deleteBackward()
 }
 
@@ -69,6 +70,31 @@ public final class DocumentSession {
         model.reset()
         expectedContext = Context(document)
         isUpdating = false
+    }
+
+    /// Commit composition without adding whitespace, then move whole visible
+    /// characters. UIKit text offsets use UTF-16 storage positions.
+    public func moveCursor(by steps: Int, in document: KeyboardDocument) {
+        guard !isUpdating, steps != 0 else { return }
+        synchronize(with: document)
+        _ = write(to: document) {
+            if !self.model.text.isEmpty {
+                let composition = self.model.text
+                self.model.reset()
+                document.insertText(composition)
+            }
+            let bounded = max(-32, min(32, steps))
+            let context = bounded < 0 ? document.before : document.after
+            let offset: Int
+            if let context {
+                let characters = bounded < 0 ? String(context.suffix(-bounded)) : String(context.prefix(bounded))
+                offset = characters.utf16.count * (bounded < 0 ? -1 : 1)
+            } else {
+                offset = bounded < 0 ? -1 : 1
+            }
+            if offset != 0 { document.adjustTextPosition(byCharacterOffset: offset) }
+            return true
+        }
     }
 
     @discardableResult

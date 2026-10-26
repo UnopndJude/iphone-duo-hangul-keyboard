@@ -29,6 +29,11 @@ final class KeyboardViewController: UIInputViewController {
             self.session.apply(action, to: self.document)
             self.refresh()
         }
+        keyboard.onMoveCursor = { [weak self] steps in
+            guard let self else { return }
+            self.session.moveCursor(by: steps, in: self.document)
+            self.refresh()
+        }
         keyboard.onHelp = { [weak self] in self?.showHelp() }
         keyboard.onLanguageChange = { [weak self] language in self?.primaryLanguage = language }
         keyboard.nextKeyboardButton.addTarget(self, action: #selector(changeInputMode(_:event:)), for: .allTouchEvents)
@@ -119,5 +124,6 @@ private final class ProxyDocument: KeyboardDocument {
     func setMarkedText(_ text: String, selectedRange: NSRange) { resolve()?.setMarkedText(text, selectedRange: selectedRange) }
     func unmarkText() { resolve()?.unmarkText() }
     func insertText(_ text: String) { resolve()?.insertText(text) }
+    func adjustTextPosition(byCharacterOffset offset: Int) { resolve()?.adjustTextPosition(byCharacterOffset: offset) }
     func deleteBackward() { resolve()?.deleteBackward() }
 }

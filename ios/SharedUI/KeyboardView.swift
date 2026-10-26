@@ -4,6 +4,7 @@ import UIKit
 /// Joystick gestures own one touch; letter and symbol keys allow overlapping thumbs.
 public final class KeyboardView: UIView {
     public var onAction: ((KeyboardAction) -> Void)?
+    public var onMoveCursor: ((Int) -> Void)?
     public var onHelp: (() -> Void)?
     public var onLanguageChange: ((String) -> Void)?
     public let nextKeyboardButton: UIButton = OwnedKeyboardButton(type: .system)
@@ -42,6 +43,7 @@ public final class KeyboardView: UIView {
     private var target: String?
     private var canUndoModifier = false
     private var feedback: UISelectionFeedbackGenerator?
+    private var spaceCursor = SpaceCursorGesture()
     private var deleteTimer: Timer?
     private var deleteHoldStarted: CFTimeInterval = 0
     private var lastBlockDelete: CFTimeInterval = 0
@@ -193,6 +195,7 @@ public final class KeyboardView: UIView {
     }
 
     public func cancelGesture() {
+        spaceCursor = SpaceCursorGesture()
         stopDeleteHold()
         // Stop a pending long press too when the keyboard rotates or changes mode.
         for recognizer in shiftButton.gestureRecognizers ?? [] {
@@ -509,7 +512,7 @@ public final class KeyboardView: UIView {
 
     fileprivate func acquire(_ button: OwnedKeyboardButton) -> Bool {
         guard ownerTouch == nil, ownerButton == nil else { return false }
-        if (englishMode || symbolMode) && button !== deleteButton && isIndependentTypingKey(button) {
+        if (englishMode || symbolMode) && button !== deleteButton && !isSpace(button) && isIndependentTypingKey(button) {
             // Separate letter/symbol contacts may overlap. A mode/page/Shift control still
             // waits until they end so it cannot change pending key meanings.
             typingTouches.insert(button)
@@ -524,6 +527,7 @@ public final class KeyboardView: UIView {
 
     fileprivate func release(_ button: OwnedKeyboardButton) {
         if button === deleteButton { stopDeleteHold(); didRepeatDelete = false }
+        if isSpace(button) { spaceCursor = SpaceCursorGesture() }
         if ownerButton === button { ownerButton = nil }
         typingTouches.remove(button)
     }
@@ -535,7 +539,23 @@ public final class KeyboardView: UIView {
     }
 
     @objc private func showHelp() { onHelp?() }
-    @objc private func insertSpace() { emit(.literal(" ")) }
+    private func isSpace(_ button: OwnedKeyboardButton) -> Bool {
+        button === spaceButton || button === rightSpaceButton
+    }
+
+    fileprivate func beginSpaceDrag(_ button: OwnedKeyboardButton, at point: CGPoint) {
+        if isSpace(button) { spaceCursor.begin(at: point) }
+    }
+
+    fileprivate func moveSpaceDrag(_ button: OwnedKeyboardButton, to point: CGPoint) {
+        guard isSpace(button) else { return }
+        let steps = spaceCursor.move(to: point)
+        if steps != 0 { feedback?.selectionChanged(); onMoveCursor?(steps) }
+    }
+
+    @objc private func insertSpace() {
+        if !spaceCursor.suppressesSpace { emit(.literal(" ")) }
+    }
     @objc private func deleteCharacter() {
         if !didRepeatDelete { emit(.delete) }
     }
@@ -605,10 +625,12 @@ private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
         ownsTouch = true
         super.touchesBegan(touches, with: event)
         keyboard?.beginDeleteHold(self)
+        if let touch = touches.first { keyboard?.beginSpaceDrag(self, at: touch.location(in: keyboard)) }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if ownsTouch {
+            if let touch = touches.first { keyboard?.moveSpaceDrag(self, to: touch.location(in: keyboard)) }
             super.touchesMoved(touches, with: event)
             if let touch = touches.first, !bounds.contains(touch.location(in: self)) {
                 keyboard?.leaveDeleteButton(self)
@@ -618,6 +640,7 @@ private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard ownsTouch else { return }
+        if let touch = touches.first { keyboard?.moveSpaceDrag(self, to: touch.location(in: keyboard)) }
         super.touchesEnded(touches, with: event)
         ownsTouch = false
         keyboard?.release(self)
