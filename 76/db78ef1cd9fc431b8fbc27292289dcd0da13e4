@@ -1,0 +1,97 @@
+LICENSE
+  s_a5e1472697f7cb::t_ed1a92c72a57c0 1-21
+.gitignore
+  s_a5e1472697f7cb::t_e60ccef878e436 1-43
+README.md
+  s_a5e1472697f7cb::t_17f822aaf160ad 1-102
+ios/App/AppDelegate.swift
+  s_cb08a849d431ed::t_efab73dc0f94a9 1-12
+ios/App/HostViewController.swift
+  s_f4299ac4e87532::t_4c6122fcd8d4bf 1-161
+ios/App/PrivacyInfo.xcprivacy
+  s_cb08a849d431ed::t_fe933daf9975c1 1-8
+ios/App/SceneDelegate.swift
+  s_cb08a849d431ed::t_298216f5d018c0 1-14
+ios/App/ScenicBackdropView.swift
+  s_a5e1472697f7cb::t_44defc7ffe67cd 1-53
+ios/Config/Local.xcconfig.example
+  s_cb08a849d431ed::t_fc100e28acddd2 1-4
+ios/Config/Shared.xcconfig
+  s_a5e1472697f7cb::t_35ccba95cf7b87 1-11
+ios/Core/AnchoredGesture.swift
+  s_cb08a849d431ed::t_58d60965ab8d98 1-42
+ios/Core/EnglishLayout.swift
+  s_f4299ac4e87532::t_08c4318cdb52b0 1-77
+ios/Core/GestureClassifier.swift
+  s_cb08a849d431ed::t_95f4774c9553a5 1-131
+ios/Core/HangulComposer.swift
+  s_cb08a849d431ed::t_0245d863c9b392 1-81
+ios/Core/KeyboardSizing.swift
+  s_a5e1472697f7cb::t_5bf198c8d7929b 1-41
+ios/Core/SymbolLayout.swift
+  s_f4299ac4e87532::t_e6d39735149bf1 1-73
+ios/Core/ThreePadMapping.swift
+  s_a5e1472697f7cb::t_84fe14ba4bb985 1-70
+ios/Core/ThreePadModel.swift
+  s_a5e1472697f7cb::t_039244edbd5928 1-129
+ios/DocumentBridge/DocumentSession.swift
+  s_a5e1472697f7cb::t_90f3373c7267e4 1-131
+ios/KeyboardExtension/Info.plist
+  s_f4299ac4e87532::t_7f94303f1af74e 1-22
+ios/KeyboardExtension/KeyboardViewController.swift
+  s_f4299ac4e87532::t_cef780ed8b2d06 1-123
+ios/Package.swift
+  s_cb08a849d431ed::t_a46b58df9f35cb 1-18
+ios/SharedUI/KeyboardView.swift
+  s_a5e1472697f7cb::t_068829811c6007 1-745
+ios/Tests/CoreTests/AnchoredGestureTests.swift
+  s_cb08a849d431ed::t_b7696e4f257630 1-248
+ios/Tests/CoreTests/EnglishLayoutTests.swift
+  s_a5e1472697f7cb::t_0c7a3978a79b24 1-130
+ios/Tests/CoreTests/GestureClassifierTests.swift
+  s_a5e1472697f7cb::t_04320426462df6 1-131
+ios/Tests/CoreTests/KeyboardSizingTests.swift
+  s_a5e1472697f7cb::t_81e53f1d34d783 1-60
+ios/Tests/CoreTests/SymbolLayoutTests.swift
+  s_a5e1472697f7cb::t_0e14ed0d42f63c 1-145
+ios/Tests/DocumentTests/DocumentSessionTests.swift
+  s_a5e1472697f7cb::t_22cf90c19fd9a3 1-383
+ios/ThreePad.xcodeproj/project.pbxproj
+  s_a5e1472697f7cb::t_a38f91d101f358 1-479
+ios/ThreePad.xcodeproj/xcshareddata/xcschemes/ThreePad.xcscheme
+  s_a5e1472697f7cb::t_2fe50ff409485a 1-19
+ios/generate-project.py
+  s_a5e1472697f7cb::t_c6567d5d7d3e24 1-168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "76db78ef1cd9fc431b8fbc27292289dcd0da13e4",
+  "prompts": {},
+  "sessions": {
+    "s_a5e1472697f7cb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a166a2-9f2b-75c3-b30d-57ae412b986c",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "UnopndJude <101383622+UnopndJude@users.noreply.github.com>"
+    },
+    "s_cb08a849d431ed": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a10f62-8a72-7100-856d-571350abbcc5",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "UnopndJude <101383622+UnopndJude@users.noreply.github.com>"
+    },
+    "s_f4299ac4e87532": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04688-526b-7631-a6f4-0391e9a4c652",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "UnopndJude <101383622+UnopndJude@users.noreply.github.com>"
+    }
+  }
+}
