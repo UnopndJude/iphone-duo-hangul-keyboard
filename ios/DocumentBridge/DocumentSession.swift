@@ -97,6 +97,27 @@ public final class DocumentSession {
         }
     }
 
+    /// Move only through visible newline-delimited context; no guessing when
+    /// the host hides text or exposes a selected range.
+    public func moveLine(by steps: Int, in document: KeyboardDocument) {
+        guard !isUpdating, steps != 0 else { return }
+        synchronize(with: document)
+        _ = write(to: document) {
+            if !self.model.text.isEmpty {
+                let composition = self.model.text
+                self.model.reset()
+                document.insertText(composition)
+            }
+            guard document.selected?.isEmpty != false else { return false }
+            let direction = steps < 0 ? -1 : 1
+            for _ in 0..<min(abs(steps), 8) {
+                guard let offset = CursorLine.offset(before: document.before, after: document.after, direction: direction), offset != 0 else { break }
+                document.adjustTextPosition(byCharacterOffset: offset)
+            }
+            return true
+        }
+    }
+
     @discardableResult
     public func apply(_ action: KeyboardAction, to document: KeyboardDocument) -> Bool {
         guard !isUpdating else { return false }

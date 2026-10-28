@@ -89,6 +89,20 @@ final class HostViewController: UIViewController {
             }
             self.refreshPractice()
         }
+        keyboard.onMoveLine = { [weak self] steps in
+            guard let self else { return }
+            self.practicePrefix += self.model.text
+            self.model.reset()
+            for _ in 0..<min(abs(steps), 8) {
+                guard let offset = CursorLine.offset(before: self.practicePrefix, after: self.practiceSuffix, direction: steps), offset != 0 else { break }
+                let whole = self.practicePrefix + self.practiceSuffix
+                let index = self.practicePrefix.utf16.count + offset
+                guard let boundary = String.Index(utf16Offset: index, in: whole).samePosition(in: whole) else { break }
+                self.practicePrefix = String(whole[..<boundary])
+                self.practiceSuffix = String(whole[boundary...])
+            }
+            self.refreshPractice()
+        }
         keyboard.onHelp = { [weak self] in self?.showGestureHelp() }
 
         body.axis = .vertical

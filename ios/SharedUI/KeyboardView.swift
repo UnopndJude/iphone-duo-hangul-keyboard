@@ -5,6 +5,7 @@ import UIKit
 public final class KeyboardView: UIView {
     public var onAction: ((KeyboardAction) -> Void)?
     public var onMoveCursor: ((Int) -> Void)?
+    public var onMoveLine: ((Int) -> Void)?
     public var onDismiss: (() -> Void)?
     public var onHelp: (() -> Void)?
     public var onLanguageChange: ((String) -> Void)?
@@ -571,7 +572,9 @@ public final class KeyboardView: UIView {
     fileprivate func moveSpaceDrag(_ button: OwnedKeyboardButton, to point: CGPoint) {
         guard isSpace(button) else { return }
         let steps = spaceCursor.move(to: point)
+        let lineSteps = spaceCursor.takeVerticalSteps()
         if steps != 0 { feedback?.selectionChanged(); onMoveCursor?(steps) }
+        if lineSteps != 0 { feedback?.selectionChanged(); onMoveLine?(lineSteps) }
     }
 
     @objc private func insertSpace() {

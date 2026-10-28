@@ -435,6 +435,7 @@ final class DocumentSessionTests: XCTestCase {
         s.moveCursor(by: 30, in: d)
         XCTAssertEqual(d.cursorOffsets.last, 1)
     }
+
     func testEachConsonantDigitCommitsHangulAndDeletesAsLiteral() {
         let digits = JoystickMapping.consonants.flatMap { key in
             key.outputs.compactMap { direction, value in
@@ -485,5 +486,36 @@ final class DocumentSessionTests: XCTestCase {
         }
     }
 
+    func testVerticalLineMovementPreservesTextAndColumn() {
+        let d = TestDocument(), s = DocumentSession()
+        d.text = "가나다\nab🙂c\nxyz"
+        d.cursor = 6
+        let original = d.text
+        s.moveLine(by: -1, in: d)
+        XCTAssertEqual(d.cursor, 2)
+        s.moveLine(by: 1, in: d)
+        XCTAssertEqual(d.cursor, 6)
+        s.moveLine(by: 1, in: d)
+        XCTAssertEqual(d.cursor, 11)
+        XCTAssertEqual(d.text, original)
+        XCTAssertEqual(d.deleteCalls, 0)
+    }
+
+    func testVerticalMovementCommitsCompositionAndRespectsSelection() {
+        let d = TestDocument(), s = DocumentSession()
+        d.text = "앞줄\n"; d.cursor = d.text.count
+        input([.jamo("ㄱ"), .jamo("ㅏ")], s, d)
+        s.moveLine(by: -1, in: d)
+        XCTAssertEqual(d.text, "앞줄\n가")
+        XCTAssertEqual(d.cursor, 1)
+        XCTAssertNil(d.mark)
+        d.cursor = 0; d.selectionLength = 1
+        s.moveLine(by: 1, in: d)
+        XCTAssertEqual(d.cursor, 0)
+        XCTAssertEqual(d.selectionLength, 1)
+        d.selectionLength = 0; d.hidesContext = true
+        s.moveLine(by: 1, in: d)
+        XCTAssertEqual(d.cursor, 0)
+    }
 
 }

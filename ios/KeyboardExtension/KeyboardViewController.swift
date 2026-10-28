@@ -34,6 +34,11 @@ final class KeyboardViewController: UIInputViewController {
             self.session.moveCursor(by: steps, in: self.document)
             self.refresh()
         }
+        keyboard.onMoveLine = { [weak self] steps in
+            guard let self else { return }
+            self.session.moveLine(by: steps, in: self.document)
+            self.refresh()
+        }
         keyboard.onDismiss = { [weak self] in
             guard let self else { return }
             self.session.finish(in: self.document)
