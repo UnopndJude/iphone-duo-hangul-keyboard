@@ -15,8 +15,7 @@ public final class KeyboardView: UIView {
     private let glassBackground = UIVisualEffectView()
     private let cPad = DirectionPad(pad: .c)
     private let vPad = DirectionPad(pad: .v)
-    private let punctuationPads = JoystickMapping.punctuation.map { DirectionPad(pad: .m, fixedKey: $0) }
-    private var inputSurfaces: [DirectionPad] { [cPad, vPad] + punctuationPads }
+    private var inputSurfaces: [DirectionPad] { [cPad, vPad] }
     private let statusLabel = UILabel()
     private let helpButton = OwnedKeyboardButton(type: .system)
     private let modeButton = OwnedKeyboardButton(type: .system)
@@ -265,21 +264,9 @@ public final class KeyboardView: UIView {
         let barY = metrics.barY
         let padY = metrics.padY
         let padHeight = metrics.padHeight
-        // Wide layouts put punctuation between the circles; narrow layouts use
-        // the otherwise spare vertical space above them. Keep targets >=44pt.
-        let wideSymbols = metrics.wideSymbols
-        let punctuationHeight: CGFloat = 44
         let reserved = metrics.reserved
         let diameter = metrics.diameter
         let circleY = padY + reserved + (padHeight - reserved - diameter) / 2
-        for (index, pad) in punctuationPads.enumerated() {
-            pad.isHidden = symbolMode || englishMode || !metrics.showQuickSymbols
-            let symbolWidth: CGFloat = 54
-            let rowWidth = symbolWidth * 3 + gap * 2
-            let y = wideSymbols ? padY + (padHeight - punctuationHeight) / 2 : padY
-            pad.frame = CGRect(x: left + (width - rowWidth) / 2 + CGFloat(index) * (symbolWidth + gap),
-                               y: y, width: symbolWidth, height: punctuationHeight)
-        }
         cPad.frame = CGRect(x: left, y: circleY, width: diameter, height: diameter)
         vPad.frame = CGRect(x: left + width - diameter, y: circleY, width: diameter, height: diameter)
         cPad.isHidden = symbolMode || englishMode
@@ -707,6 +694,13 @@ private final class DirectionPad: UIView {
                 }
             }
         }
+        if pad == .v && fixedKey == nil {
+            accessibilityCustomActions?.append(contentsOf: ["ㅒ", "ㅖ"].map { vowel in
+                UIAccessibilityCustomAction(name: "방향 반전으로 \(vowel) 입력") { [weak self] _ in
+                    self?.performAction?(.jamo(vowel)); return self != nil
+                }
+            })
+        }
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     override func accessibilityActivate() -> Bool {
@@ -722,7 +716,7 @@ private final class DirectionPad: UIView {
             guard let value = key.outputs[direction] else { continue }
             let dx: CGFloat = direction == .e ? offset : direction == .w ? -offset : 0
             let dy: CGFloat = direction == .s ? offset : direction == .n ? -offset : 0
-            text(value, at: CGPoint(x: center.x + dx, y: center.y + dy), size: 9, color: Palette.muted)
+            text(value, at: CGPoint(x: center.x + dx, y: center.y + dy), size: 10, color: value.allSatisfy(\.isNumber) ? accent : Palette.muted, weight: value.allSatisfy(\.isNumber) ? .bold : .regular)
         }
     }
     override func draw(_ rect: CGRect) {

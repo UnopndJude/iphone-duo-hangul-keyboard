@@ -15,13 +15,13 @@ public enum JoystickMapping {
         }
     }
     public static let consonants: [Key] = [
-        Key(label: "ㄱ", outputs: [.tap:"ㄱ", .n:"ㄲ", .w:"ㅋ", .e:"ㅋ"]),
+        Key(label: "ㄱ", outputs: [.tap:"ㄱ", .n:"ㄲ", .w:"ㅋ", .e:"ㅋ", .s:"5"]),
         Key(label: "ㄴ", outputs: [.tap:"ㄴ", .n:"ㄸ", .s:"ㄷ", .w:"ㅌ", .e:"ㅌ"]),
         Key(label: "ㅁ", outputs: [.tap:"ㅁ", .n:"ㅃ", .s:"ㅂ", .w:"ㅍ", .e:"ㅍ"]),
-        Key(label: "ㅇ", outputs: [.tap:"ㅇ", .w:"ㅎ", .e:"ㅎ"]),
+        Key(label: "ㅇ", outputs: [.tap:"ㅇ", .w:"ㅎ", .e:"ㅎ", .n:"6", .s:"7"]),
         Key(label: "ㅈ", outputs: [.tap:"ㅈ", .n:"ㅉ", .w:"ㅊ", .e:"ㅊ", .s:"~"]),
-        Key(label: "ㅅ", outputs: [.tap:"ㅅ", .n:"ㅆ"]),
-        Key(label: "ㄹ", outputs: [.tap:"ㄹ"])
+        Key(label: "ㅅ", outputs: [.tap:"ㅅ", .n:"ㅆ", .w:"8", .e:"9", .s:"0"]),
+        Key(label: "ㄹ", outputs: [.tap:"ㄹ", .n:"1", .w:"2", .e:"3", .s:"4"])
     ]
     public static let vowels: [Key] = [
         Key(label: "ㅢ", outputs: [.tap:"ㅢ", .n:"ㅚ", .s:"ㅟ", .w:"ㅝ", .e:"ㅘ"]),
@@ -30,11 +30,17 @@ public enum JoystickMapping {
         Key(label: "··", outputs: [.n:"ㅛ", .s:"ㅠ", .w:"ㅕ", .e:"ㅑ"])
     ]
     public static let punctuation: [Key] = [
-        Key(label: ".", outputs: [.tap:".", .n:"\"", .w:",", .s:"'"]),
-        Key(label: "?", outputs: [.tap:"?", .n:"!", .w:"+", .s:"*"]),
-        Key(label: "/", outputs: [.tap:"/", .n:":", .w:"@", .s:";"])
+        Key(label: ".", outputs: [.tap:".", .n:"\"", .w:",", .s:"'", .e:"_"]),
+        Key(label: "?", outputs: [.tap:"?", .n:"!", .w:"+", .s:"*", .e:"-"]),
+        Key(label: "/", outputs: [.tap:"/", .n:":", .w:"@", .s:";", .e:"="])
     ]
-    public static func keys(_ pad: Pad) -> [Key] { pad == .c ? consonants : pad == .v ? vowels : [] }
+    public static func keys(_ pad: Pad) -> [Key] {
+        if pad == .c { return consonants }
+        // Interleave punctuation with the three outer vowels. Their angles
+        // stay at 0°, 120°, and 240°; ㅣ remains at the centre.
+        if pad == .v { return [vowels[0], punctuation[0], vowels[2], punctuation[1], vowels[3], punctuation[2], vowels[1]] }
+        return []
+    }
     public static func centralKey(_ pad: Pad) -> Key? { keys(pad).first { $0.label == (pad == .c ? "ㅇ" : "ㅣ") } }
     public static func ringKeys(_ pad: Pad) -> [Key] { keys(pad).filter { $0.label != centralKey(pad)?.label } }
     public static let directions: [(Direction, String)] = [(.n,"↑"), (.e,"→"), (.s,"↓"), (.w,"←")]

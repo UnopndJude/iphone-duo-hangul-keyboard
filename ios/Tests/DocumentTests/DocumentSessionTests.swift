@@ -435,5 +435,55 @@ final class DocumentSessionTests: XCTestCase {
         s.moveCursor(by: 30, in: d)
         XCTAssertEqual(d.cursorOffsets.last, 1)
     }
+    func testEachConsonantDigitCommitsHangulAndDeletesAsLiteral() {
+        let digits = JoystickMapping.consonants.flatMap { key in
+            key.outputs.compactMap { direction, value in
+                value.allSatisfy(\.isNumber) ? key.action(direction) : nil
+            }
+        }
+        XCTAssertEqual(digits.count, 10)
+        for digit in digits {
+            let d = TestDocument(), s = DocumentSession()
+            input([.jamo("ㅎ"), .jamo("ㅏ"), .jamo("ㄴ"), digit], s, d)
+            guard case let .literal(value) = digit else { XCTFail(); continue }
+            XCTAssertEqual(d.text, "한" + value)
+            XCTAssertNil(d.mark)
+            input([.delete, .jamo("ㄱ"), .jamo("ㅏ")], s, d)
+            XCTAssertEqual(d.text, "한가")
+        }
+    }
+
+    func testAllModernVowelsThroughActualJoystickActions() {
+        var paths: [String: [KeyboardAction]] = [:]
+        for key in JoystickMapping.vowels {
+            for (direction, value) in key.outputs {
+                if let action = key.action(direction) { paths[value] = [action] }
+            }
+        }
+        paths["ㅒ"] = paths["ㅑ"]! + paths["ㅣ"]!
+        paths["ㅖ"] = paths["ㅕ"]! + paths["ㅣ"]!
+        XCTAssertEqual(Set(paths.keys), Set(HangulComposer.vowels))
+        for vowel in HangulComposer.vowels {
+            let d = TestDocument(), s = DocumentSession()
+            let expected = HangulComposer.syllable("ㄱ", vowel)
+            input([.jamo("ㄱ")] + paths[vowel]!, s, d)
+            XCTAssertEqual(d.text, expected, vowel)
+            input([.literal(" ")], s, d)
+            XCTAssertEqual(d.text, expected + " ", vowel)
+        }
+    }
+
+    func testYaAndYeoThenCenterProduceYaeAndYeAndDeleteLastComponent() {
+        let pad = JoystickMapping.vowels.first { $0.label == "··" }!
+        let center = JoystickMapping.vowels.first { $0.label == "ㅣ" }!
+        for (direction, expected, previous) in [(Direction.e, "걔", "갸"), (.w, "계", "겨")] {
+            let d = TestDocument(), s = DocumentSession()
+            input([.jamo("ㄱ"), pad.action(direction)!, center.action(.tap)!], s, d)
+            XCTAssertEqual(d.text, expected)
+            input([.delete], s, d)
+            XCTAssertEqual(d.text, previous)
+        }
+    }
+
 
 }

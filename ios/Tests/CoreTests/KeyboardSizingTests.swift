@@ -40,7 +40,7 @@ final class KeyboardSizingTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(m.diameter, 140)
         let large = KeyboardSizing.metrics(width: 888, height: 300, bottomInset: 0)
         XCTAssertEqual(large.header, 24)
-        XCTAssertTrue(large.showQuickSymbols)
+        XCTAssertEqual(large.reserved, 0)
     }
 
     func testConsonantAndVowelCentersRemainSelectableAtMinimumSize() {

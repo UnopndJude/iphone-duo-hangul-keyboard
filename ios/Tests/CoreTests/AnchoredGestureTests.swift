@@ -25,13 +25,45 @@ final class AnchoredGestureTests: XCTestCase {
             for key in JoystickMapping.keys(pad) {
                 for (direction, dx, dy) in [(Direction.tap, 0.0, 0.0), (.n,0,-30), (.s,0,30), (.w,-30,0), (.e,30,0)] {
                     let expected = key.outputs[direction].map { value -> KeyboardAction in
-                        value == "~" ? .literal("~") : .jamo(value)
+                        HangulComposer.initials.contains(value) || HangulComposer.vowels.contains(value) ? .jamo(value) : .literal(value)
                     }
                     XCTAssertEqual(input(pad, key.label, dx: dx, dy: dy), expected, "\(key.label) \(direction)")
                 }
             }
         }
     }
+    func testDigitsOccupyOnlyPreviouslyUnusedDirections() {
+        let paths: [(String, CGFloat, CGFloat, String)] = [
+            ("ㄹ", 0, -30, "1"), ("ㄹ", -30, 0, "2"), ("ㄹ", 30, 0, "3"), ("ㄹ", 0, 30, "4"),
+            ("ㄱ", 0, 30, "5"), ("ㅇ", 0, -30, "6"), ("ㅇ", 0, 30, "7"),
+            ("ㅅ", -30, 0, "8"), ("ㅅ", 30, 0, "9"), ("ㅅ", 0, 30, "0")
+        ]
+        for (key, dx, dy, digit) in paths {
+            XCTAssertEqual(input(.c, key, dx: dx, dy: dy), .literal(digit))
+        }
+        XCTAssertEqual(Set(paths.map { $0.3 }), Set("0123456789".map(String.init)))
+        for (key, value) in [("ㄱ", "ㅋ"), ("ㄴ", "ㅌ"), ("ㅁ", "ㅍ"), ("ㅇ", "ㅎ"), ("ㅈ", "ㅊ")] {
+            XCTAssertEqual(input(.c, key, dx: -30), .jamo(value))
+            XCTAssertEqual(input(.c, key, dx: 30), .jamo(value))
+        }
+    }
+
+    func testPunctuationAlternatesWithUnmovedVowels() {
+        XCTAssertEqual(JoystickMapping.ringKeys(.v).map(\.label), ["ㅢ", ".", "ㅡ", "?", "··", "/"])
+        for (label, index) in [("ㅢ", 0), ("ㅡ", 2), ("··", 4)] {
+            let point = start(.v, label)
+            let angle = -CGFloat.pi / 2 + CGFloat(index) * .pi / 3
+            let radius = bounds.width * 0.35
+            XCTAssertEqual(point.x, bounds.midX + cos(angle) * radius, accuracy: 0.001)
+            XCTAssertEqual(point.y, bounds.midY + sin(angle) * radius, accuracy: 0.001)
+        }
+        for key in JoystickMapping.punctuation {
+            for (direction, dx, dy) in [(Direction.tap, 0.0, 0.0), (.n, 0, -30), (.s, 0, 30), (.w, -30, 0), (.e, 30, 0)] {
+                XCTAssertEqual(input(.v, key.label, dx: dx, dy: dy), key.action(direction), "\(key.label) \(direction)")
+            }
+        }
+    }
+
     func testMergedIeungHieuhAndComposition() {
         XCTAssertEqual(JoystickMapping.consonants.count, 7)
         XCTAssertEqual(JoystickMapping.vowels.count, 4)
@@ -39,7 +71,7 @@ final class AnchoredGestureTests: XCTestCase {
         XCTAssertEqual(input(.c,"ㅇ"), .jamo("ㅇ"))
         XCTAssertEqual(input(.c,"ㅇ",dx:-30), .jamo("ㅎ"))
         XCTAssertEqual(input(.c,"ㅇ",dx:30), .jamo("ㅎ"))
-        XCTAssertNil(input(.c,"ㅇ",dy:-30))
+        XCTAssertEqual(input(.c,"ㅇ",dy:-30), .literal("6"))
         var model = ThreePadModel()
         for action in [input(.c,"ㅇ",dx:30)!, input(.v,"ㅣ",dx:30)!, input(.c,"ㄴ")!] { model.apply(action) }
         XCTAssertEqual(model.text,"한")
@@ -165,13 +197,13 @@ final class AnchoredGestureTests: XCTestCase {
         let point = start(.c, "ㄱ")
         var gesture = AnchoredGesture()
         gesture.begin(pad: .c, at: point, bounds: bounds)
-        XCTAssertNil(gesture.end(at: CGPoint(x: bounds.midX, y: bounds.midY)))
+        XCTAssertEqual(gesture.end(at: CGPoint(x: bounds.midX, y: bounds.midY)), .literal("5"))
     }
     func testOfficialPunctuationDirectionsProduceLiterals() {
         let expected: [(String, [Direction: String])] = [
-            (".", [.tap: ".", .n: "\"", .w: ",", .s: "'"]),
-            ("?", [.tap: "?", .n: "!", .w: "+", .s: "*"]),
-            ("/", [.tap: "/", .n: ":", .w: "@", .s: ";"])
+            (".", [.tap: ".", .n: "\"", .w: ",", .s: "'", .e: "_"]),
+            ("?", [.tap: "?", .n: "!", .w: "+", .s: "*", .e: "-"]),
+            ("/", [.tap: "/", .n: ":", .w: "@", .s: ";", .e: "="])
         ]
         XCTAssertEqual(JoystickMapping.punctuation.map(\.label), expected.map { $0.0 })
         for (label, outputs) in expected {
@@ -185,7 +217,7 @@ final class AnchoredGestureTests: XCTestCase {
         for pad in [Pad.c, .v] {
             for key in JoystickMapping.keys(pad) {
                 for (direction, value) in key.outputs {
-                    let expected: KeyboardAction = value == "~" ? .literal("~") : .jamo(value)
+                    let expected: KeyboardAction = HangulComposer.initials.contains(value) || HangulComposer.vowels.contains(value) ? .jamo(value) : .literal(value)
                     XCTAssertEqual(key.action(direction), expected)
                 }
             }
@@ -195,7 +227,7 @@ final class AnchoredGestureTests: XCTestCase {
         let key = JoystickMapping.punctuation.first { $0.label == "." }!
         XCTAssertNil(punctuationInput(key, dx: 30, dy: 30))
         XCTAssertNil(punctuationInput(key, dx: 16))
-        XCTAssertNil(punctuationInput(key, dx: 400))
+        XCTAssertEqual(punctuationInput(key, dx: 400), .literal("_"))
         let rect = CGRect(x: 40, y: 50, width: 84, height: 44)
         let point = CGPoint(x: rect.midX, y: rect.midY)
         var gesture = AnchoredGesture()
@@ -209,6 +241,53 @@ final class AnchoredGestureTests: XCTestCase {
         gesture.cancel()
         XCTAssertNil(gesture.end(at: point))
     }
+    func testReversalForYaeAndYeFromBothVowelKeys() {
+        for key in ["··", "ㅡ"] {
+            let origin = start(.v, key)
+            for (sign, vowel, initial) in [(CGFloat(1), "ㅒ", key == "··" ? "ㅑ" : "ㅐ"),
+                                           (-1, "ㅖ", key == "··" ? "ㅕ" : "ㅔ")] {
+                var gesture = AnchoredGesture()
+                gesture.begin(pad: .v, at: origin, bounds: bounds)
+                gesture.move(to: CGPoint(x: origin.x + sign * 35, y: origin.y))
+                XCTAssertEqual(gesture.candidate, initial)
+                gesture.move(to: CGPoint(x: origin.x + sign * 25, y: origin.y))
+                XCTAssertNotEqual(gesture.candidate, vowel)
+                gesture.move(to: CGPoint(x: origin.x + sign * 15, y: origin.y))
+                XCTAssertEqual(gesture.candidate, vowel)
+                XCTAssertEqual(gesture.preview.kind, .direction)
+                XCTAssertEqual(gesture.end(at: origin), .jamo(vowel))
+
+                gesture.begin(pad: .v, at: origin, bounds: bounds)
+                gesture.move(to: CGPoint(x: origin.x + sign * 35, y: origin.y))
+                gesture.move(to: CGPoint(x: origin.x - sign * 25, y: origin.y))
+                XCTAssertEqual(gesture.end(at: CGPoint(x: origin.x - sign * 25, y: origin.y)), .jamo(vowel))
+
+                gesture.begin(pad: .v, at: origin, bounds: bounds)
+                gesture.move(to: CGPoint(x: origin.x + sign * 35, y: origin.y))
+                gesture.cancel()
+                XCTAssertNil(gesture.end(at: origin))
+            }
+        }
+    }
+
+    func testVerticalTurnsAndOtherKeysDoNotProduceCompoundVowels() {
+        for key in ["··", "ㅡ", "ㅣ"] {
+            let origin = start(.v, key)
+            var gesture = AnchoredGesture()
+            gesture.begin(pad: .v, at: origin, bounds: bounds)
+            gesture.move(to: CGPoint(x: origin.x + 30, y: origin.y))
+            gesture.move(to: CGPoint(x: origin.x + 30, y: origin.y - 25))
+            XCTAssertNotEqual(gesture.candidate, "ㅒ")
+            gesture.cancel()
+        }
+        let origin = start(.v, "ㅣ")
+        var gesture = AnchoredGesture()
+        gesture.begin(pad: .v, at: origin, bounds: bounds)
+        gesture.move(to: CGPoint(x: origin.x + 30, y: origin.y))
+        gesture.move(to: CGPoint(x: origin.x - 30, y: origin.y))
+        XCTAssertNotEqual(gesture.candidate, "ㅒ")
+    }
+
     func testVowelCompositionAndSingleDelete() {
         var model = ThreePadModel()
         for action in [input(.c,"ㅈ",dx:30)!, input(.v,"ㅣ",dx:30)!] { model.apply(action) }

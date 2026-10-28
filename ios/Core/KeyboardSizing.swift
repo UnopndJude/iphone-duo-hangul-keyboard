@@ -31,7 +31,7 @@ public enum KeyboardSizing {
         let barY = max(padY + 6, height - bottom - barHeight)
         let padHeight = max(0, barY - 6 - padY)
         let wideSymbols = width >= 2 * min(padHeight, 280) + 3 * 54 + 4 * 6
-        let reserved: CGFloat = compact || wideSymbols ? 0 : 50
+        let reserved: CGFloat = 0
         let diameter = max(0, min((width - 14) / 2, padHeight - reserved, 280))
         return Metrics(header: header, bottom: bottom, barHeight: barHeight,
                        barY: barY, padY: padY, padHeight: padHeight,
