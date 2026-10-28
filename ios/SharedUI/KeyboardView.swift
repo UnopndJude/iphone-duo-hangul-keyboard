@@ -44,7 +44,7 @@ public final class KeyboardView: UIView {
     private var lastSafeArea: UIEdgeInsets = .zero
     private var target: String?
     private var canUndoModifier = false
-    private var feedback: UISelectionFeedbackGenerator?
+    private var feedback: UIImpactFeedbackGenerator?
     private var spaceCursor = SpaceCursorGesture()
     private var deleteTimer: Timer?
     private var deleteHoldStarted: CFTimeInterval = 0
@@ -242,9 +242,9 @@ public final class KeyboardView: UIView {
             feedback = nil
         } else if #available(iOS 17.5, *) {
             // Bind feedback to the visible keyboard, including extension windows.
-            feedback = UISelectionFeedbackGenerator(view: self)
+            feedback = UIImpactFeedbackGenerator(style: .medium, view: self)
         } else {
-            feedback = UISelectionFeedbackGenerator()
+            feedback = UIImpactFeedbackGenerator(style: .medium)
         }
     }
 
@@ -360,6 +360,10 @@ public final class KeyboardView: UIView {
 
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = ownerTouch, touches.contains(touch) else { return }
+        classifier.move(to: touch.location(in: self))
+        // A quick reversal can be delivered only in touchesEnded. Give its
+        // final candidate the same feedback as a move sample.
+        updatePreview()
         let action = classifier.end(at: touch.location(in: self))
         ownerPad?.preview = nil
         ownerPad = nil
@@ -388,7 +392,8 @@ public final class KeyboardView: UIView {
             let hints = JoystickMapping.directions.compactMap { direction, arrow in key?.outputs[direction].map { arrow + $0 } }.joined(separator: " ")
             statusLabel.text = candidate.map { "놓으면 \($0) · \(hints)" } ?? "\(hints) · 놓으면 취소"
             if candidate != lastCandidate, candidate != nil {
-                feedback?.selectionChanged()
+                feedback?.impactOccurred()
+                feedback?.prepare()
                 lastCandidate = candidate
             }
         case .uncertain:
@@ -515,7 +520,7 @@ public final class KeyboardView: UIView {
     }
 
     private func emit(_ action: KeyboardAction, giveFeedback: Bool = true) {
-        if giveFeedback, action != .commit { feedback?.selectionChanged() }
+        if giveFeedback, action != .commit { feedback?.impactOccurred() }
         onAction?(action)
         updateIdleStatus()
     }
@@ -573,8 +578,8 @@ public final class KeyboardView: UIView {
         guard isSpace(button) else { return }
         let steps = spaceCursor.move(to: point)
         let lineSteps = spaceCursor.takeVerticalSteps()
-        if steps != 0 { feedback?.selectionChanged(); onMoveCursor?(steps) }
-        if lineSteps != 0 { feedback?.selectionChanged(); onMoveLine?(lineSteps) }
+        if steps != 0 { feedback?.impactOccurred(); feedback?.prepare(); onMoveCursor?(steps) }
+        if lineSteps != 0 { feedback?.impactOccurred(); feedback?.prepare(); onMoveLine?(lineSteps) }
     }
 
     @objc private func insertSpace() {
