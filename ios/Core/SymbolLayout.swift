@@ -7,7 +7,7 @@ public enum SymbolLayout {
         public let centerGap: CGRect?
     }
 
-    public static func make(in area: CGRect, needsGlobe: Bool) -> Layout {
+    public static func make(in area: CGRect, needsGlobe: Bool, needsDismiss: Bool = false) -> Layout {
         let empty = Layout(frames: [:], centerGap: nil)
         guard area.origin.x.isFinite, area.origin.y.isFinite,
               area.size.width.isFinite, area.size.height.isFinite,
@@ -45,7 +45,7 @@ public enum SymbolLayout {
         let third = ["page"] + (20..<28).map { "symbol-\($0)" } + ["delete"]
         if area.width < 600 {
             let unit = area.width / 10
-            let controls = (needsGlobe ? ["globe"] : []) + ["mode", "space", "return"]
+            let controls = (needsGlobe ? ["globe"] : []) + ["mode", "space", "return"] + (needsDismiss ? ["dismiss"] : [])
             let fixed = min(44, (area.width - CGFloat(controls.count - 1) * keyGap - 64) / CGFloat(controls.count - 1))
             guard unit > keyGap, fixed > 0 else { return empty }
             for (index, keys) in [first, second, third].enumerated() {
@@ -65,7 +65,7 @@ public enum SymbolLayout {
         }
         bottom((needsGlobe ? ["globe"] : []) + ["mode", "space"],
                x: area.minX, width: bankWidth, fixed: 44, space: "space")
-        bottom(["space-right", "return"], x: rightX, width: bankWidth, fixed: 44, space: "space-right")
+        bottom(["space-right", "return"] + (needsDismiss ? ["dismiss"] : []), x: rightX, width: bankWidth, fixed: 44, space: "space-right")
         return Layout(frames: frames,
                       centerGap: CGRect(x: area.minX + bankWidth, y: area.minY,
                                         width: area.width - bankWidth * 2, height: area.height))

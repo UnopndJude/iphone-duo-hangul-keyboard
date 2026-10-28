@@ -5,6 +5,7 @@ import UIKit
 public final class KeyboardView: UIView {
     public var onAction: ((KeyboardAction) -> Void)?
     public var onMoveCursor: ((Int) -> Void)?
+    public var onDismiss: (() -> Void)?
     public var onHelp: (() -> Void)?
     public var onLanguageChange: ((String) -> Void)?
     public let nextKeyboardButton: UIButton = OwnedKeyboardButton(type: .system)
@@ -31,6 +32,7 @@ public final class KeyboardView: UIView {
     private let rightSpaceButton = OwnedKeyboardButton(type: .system)
     private let deleteButton = OwnedKeyboardButton(type: .system)
     private let returnButton = OwnedKeyboardButton(type: .system)
+    private let dismissButton = OwnedKeyboardButton(type: .system)
     private var symbolButtons: [OwnedKeyboardButton] = []
     private var symbolMode = false
     private var classifier = AnchoredGesture()
@@ -142,6 +144,10 @@ public final class KeyboardView: UIView {
         configureButton(deleteButton, title: "", label: "한 단계 지우기")
         deleteButton.setImage(UIImage(systemName: "delete.left"), for: .normal)
         deleteButton.addTarget(self, action: #selector(deleteCharacter), for: .touchUpInside)
+        configureButton(dismissButton, title: "", label: "키보드 내리기")
+        dismissButton.accessibilityIdentifier = "key-dismiss"
+        dismissButton.setImage(UIImage(systemName: "keyboard.chevron.compact.down"), for: .normal)
+        dismissButton.addTarget(self, action: #selector(dismissKeyboard), for: .touchUpInside)
         configureButton(returnButton, title: returnKeyTitle, label: "줄바꿈")
         returnButton.addTarget(self, action: #selector(insertReturn), for: .touchUpInside)
         for index in SymbolKeyboard.pages[0].indices {
@@ -302,7 +308,9 @@ public final class KeyboardView: UIView {
         symbolPageButton.isHidden = true
         for button in symbolButtons { button.isHidden = true }
         languageButton.isHidden = false
+        dismissButton.isHidden = onDismiss == nil
         var controls: [UIButton] = [modeButton, languageButton, spaceButton, deleteButton, returnButton]
+        if onDismiss != nil { controls.append(dismissButton) }
         if needsNextKeyboard { controls.insert(nextKeyboardButton, at: 0) }
         let fixed = min(compact ? 52 : 48, (width - gap * CGFloat(controls.count - 1)) / CGFloat(controls.count))
         let spaceWidth = width - CGFloat(controls.count - 1) * (fixed + gap)
@@ -401,12 +409,12 @@ public final class KeyboardView: UIView {
     }
 
     private func layoutEnglish(in area: CGRect, compact: Bool) {
-        let layout = EnglishLayout.make(in: area, needsGlobe: needsNextKeyboard)
+        let layout = EnglishLayout.make(in: area, needsGlobe: needsNextKeyboard, needsDismiss: onDismiss != nil)
         var buttons: [String: UIButton] = letterButtons.mapValues { $0 as UIButton }
         buttons.merge(["shift": shiftButton, "delete": deleteButton, "mode": modeButton,
                        "language": languageButton, "space": spaceButton, "space-right": rightSpaceButton,
                        "quote": englishPunctuationButtons[0], "period": englishPunctuationButtons[1],
-                       "return": returnButton, "globe": nextKeyboardButton]) { _, new in new }
+                       "return": returnButton, "globe": nextKeyboardButton, "dismiss": dismissButton]) { _, new in new }
         for (key, button) in buttons {
             guard let frame = layout.frames[key] else { button.isHidden = true; continue }
             button.isHidden = false
@@ -416,10 +424,10 @@ public final class KeyboardView: UIView {
     }
 
     private func layoutSymbols(in area: CGRect, compact: Bool) {
-        let layout = SymbolLayout.make(in: area, needsGlobe: needsNextKeyboard)
+        let layout = SymbolLayout.make(in: area, needsGlobe: needsNextKeyboard, needsDismiss: onDismiss != nil)
         var buttons: [String: UIButton] = ["page": symbolPageButton, "delete": deleteButton,
             "mode": modeButton, "space": spaceButton, "space-right": rightSpaceButton,
-            "return": returnButton, "globe": nextKeyboardButton]
+            "return": returnButton, "globe": nextKeyboardButton, "dismiss": dismissButton]
         for (index, button) in symbolButtons.enumerated() { buttons["symbol-\(index)"] = button }
         for (key, button) in buttons {
             guard let frame = layout.frames[key] else { button.isHidden = true; continue }
@@ -539,6 +547,7 @@ public final class KeyboardView: UIView {
     }
 
     @objc private func showHelp() { onHelp?() }
+    @objc private func dismissKeyboard() { cancelGesture(); onDismiss?() }
     private func isSpace(_ button: OwnedKeyboardButton) -> Bool {
         button === spaceButton || button === rightSpaceButton
     }

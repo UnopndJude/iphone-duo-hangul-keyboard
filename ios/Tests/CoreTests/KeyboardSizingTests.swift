@@ -58,3 +58,26 @@ final class KeyboardSizingTests: XCTestCase {
         }
     }
 }
+
+final class DismissKeyLayoutTests: XCTestCase {
+    func testDismissFitsWithoutOverlapAcrossModesAndWidths() {
+        for width: CGFloat in [308, 363, 588, 600, 900] {
+            for globe in [false, true] {
+                let area = CGRect(x: 6, y: 4, width: width, height: 210)
+                for frames in [EnglishLayout.make(in: area, needsGlobe: globe, needsDismiss: true).frames,
+                               SymbolLayout.make(in: area, needsGlobe: globe, needsDismiss: true).frames] {
+                    guard let dismiss = frames["dismiss"], let space = frames["space"] else {
+                        XCTFail("Missing dismiss or space"); continue
+                    }
+                    XCTAssertGreaterThanOrEqual(dismiss.width, 25)
+                    XCTAssertEqual(dismiss.height, 44)
+                    XCTAssertGreaterThanOrEqual(space.width, 63.999)
+                    XCTAssertLessThanOrEqual(dismiss.maxX, area.maxX + 0.001)
+                    for (key, frame) in frames where key != "dismiss" {
+                        XCTAssertFalse(dismiss.intersects(frame), "\(width) \(key)")
+                    }
+                }
+            }
+        }
+    }
+}

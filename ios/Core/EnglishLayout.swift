@@ -8,7 +8,7 @@ public enum EnglishLayout {
         public let centerGap: CGRect?
     }
 
-    public static func make(in area: CGRect, needsGlobe: Bool) -> Layout {
+    public static func make(in area: CGRect, needsGlobe: Bool, needsDismiss: Bool = false) -> Layout {
         let empty = Layout(frames: [:], centerGap: nil)
         guard area.origin.x.isFinite, area.origin.y.isFinite,
               area.size.width.isFinite, area.size.height.isFinite,
@@ -45,7 +45,7 @@ public enum EnglishLayout {
 
         if area.width < 600 {
             let unit = area.width / 10
-            let keys = (needsGlobe ? ["globe"] : []) + ["mode", "language", "space", "quote", "period", "return"]
+            let keys = (needsGlobe ? ["globe"] : []) + ["mode", "language", "space", "quote", "period", "return"] + (needsDismiss ? ["dismiss"] : [])
             let fixed = min(44, (area.width - CGFloat(keys.count - 1) * keyGap - 64) / CGFloat(keys.count - 1))
             guard unit > keyGap, fixed > 0 else { return empty }
             row("qwertyuiop".map { (String($0), 1) }, bankX: area.minX, unit: unit, index: 0)
@@ -68,7 +68,7 @@ public enum EnglishLayout {
         row("bnm".map { (String($0), 1) } + [("delete", 2)], bankX: rightX, unit: unit, index: 2)
         bottom((needsGlobe ? ["globe"] : []) + ["mode", "language", "space"],
                x: area.minX, width: bankWidth, fixed: 44, space: "space")
-        bottom(["space-right", "quote", "period", "return"],
+        bottom(["space-right", "quote", "period", "return"] + (needsDismiss ? ["dismiss"] : []),
                x: rightX, width: bankWidth, fixed: 44, space: "space-right")
         return Layout(frames: frames,
                       centerGap: CGRect(x: area.minX + bankWidth, y: area.minY,

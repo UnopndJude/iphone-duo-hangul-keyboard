@@ -34,6 +34,11 @@ final class KeyboardViewController: UIInputViewController {
             self.session.moveCursor(by: steps, in: self.document)
             self.refresh()
         }
+        keyboard.onDismiss = { [weak self] in
+            guard let self else { return }
+            self.session.finish(in: self.document)
+            self.dismissKeyboard()
+        }
         keyboard.onHelp = { [weak self] in self?.showHelp() }
         keyboard.onLanguageChange = { [weak self] language in self?.primaryLanguage = language }
         keyboard.nextKeyboardButton.addTarget(self, action: #selector(changeInputMode(_:event:)), for: .allTouchEvents)
