@@ -56,4 +56,43 @@ final class EnglishKeyboardTests: XCTestCase {
         keyboard.toggleCapsLock(); keyboard.resetShift()
         XCTAssertEqual(keyboard.letterCase, .lower)
     }
+    func testFlickSymbolsCoverLettersAndPreserveShift() {
+        let keys = Set(EnglishKeyboard.rows.flatMap { $0 })
+        XCTAssertEqual(Set(EnglishKeyboard.flickSymbols.keys), keys)
+        XCTAssertEqual(Set(EnglishKeyboard.flickSymbols.values).count, 26)
+        for (key, symbol) in EnglishKeyboard.flickSymbols {
+            XCTAssertEqual(EnglishKeyboard.flickAction(for: key), .literal(symbol))
+        }
+        XCTAssertNil(EnglishKeyboard.flickAction(for: "Q"))
+        var keyboard = EnglishKeyboard()
+        keyboard.toggleShift()
+        XCTAssertEqual(EnglishKeyboard.flickAction(for: "a"), .literal("@"))
+        XCTAssertEqual(keyboard.letterCase, .upper)
+        XCTAssertEqual(keyboard.input("a"), .literal("A"))
+    }
+
+    func testUpwardFlickUppercasesEveryLetterAndRespectsShift() {
+        var keyboard = EnglishKeyboard()
+        for key in EnglishKeyboard.rows.flatMap({ $0 }) {
+            XCTAssertEqual(keyboard.inputUppercase(key), .literal(key.uppercased()))
+            XCTAssertEqual(keyboard.letterCase, .lower)
+        }
+        keyboard.toggleShift()
+        XCTAssertNil(keyboard.inputUppercase("!"))
+        XCTAssertEqual(keyboard.letterCase, .upper)
+        XCTAssertEqual(keyboard.inputUppercase("a"), .literal("A"))
+        XCTAssertEqual(keyboard.letterCase, .lower)
+        keyboard.toggleCapsLock()
+        XCTAssertEqual(keyboard.inputUppercase("z"), .literal("Z"))
+        XCTAssertEqual(keyboard.letterCase, .locked)
+    }
+
+    func testVerticalFlickDirectionThresholdAndDiagonalRejection() {
+        XCTAssertEqual(EnglishKeyboard.flickDirection(dx: 0, dy: -18), -1)
+        XCTAssertEqual(EnglishKeyboard.flickDirection(dx: 2, dy: 18), 1)
+        XCTAssertEqual(EnglishKeyboard.flickDirection(dx: 0, dy: 17), 0)
+        XCTAssertEqual(EnglishKeyboard.flickDirection(dx: 20, dy: 20), 0)
+        XCTAssertEqual(EnglishKeyboard.flickDirection(dx: .nan, dy: 30), 0)
+    }
+
 }

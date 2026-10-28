@@ -116,6 +116,20 @@ public final class KeyboardView: UIView {
             let button = OwnedKeyboardButton(type: .system)
             configureButton(button, title: letter, label: letter)
             button.accessibilityIdentifier = "english-\(letter)"
+            button.setFlickSymbol(EnglishKeyboard.flickSymbols[letter], letter: letter)
+            if let symbol = EnglishKeyboard.flickSymbols[letter] {
+                button.accessibilityHint = "위로 밀면 \(letter.uppercased()), 아래로 밀면 \(symbol) 입력"
+                button.accessibilityCustomActions = [
+                    UIAccessibilityCustomAction(name: "대문자 \(letter.uppercased()) 입력") { [weak self] _ in
+                        guard let self, self.englishMode, !self.symbolMode else { return false }
+                        self.insertEnglishUppercase(letter); return true
+                    },
+                    UIAccessibilityCustomAction(name: "아래로 밀어 \(symbol) 입력") { [weak self] _ in
+                        guard let self, self.englishMode, !self.symbolMode else { return false }
+                        self.emit(.literal(symbol)); return true
+                    }
+                ]
+            }
             button.addAction(UIAction { [weak self] _ in self?.insertEnglish(letter) }, for: .touchUpInside)
             button.isHidden = true
             letterButtons[letter] = button
@@ -505,6 +519,17 @@ public final class KeyboardView: UIView {
         updateIdleStatus()
     }
 
+    fileprivate func insertEnglishUppercase(_ letter: String) {
+        guard englishMode, !symbolMode, let action = english.inputUppercase(letter) else { return }
+        updateEnglishKeys()
+        emit(action)
+    }
+
+    fileprivate func insertEnglishFlick(_ symbol: String) {
+        guard englishMode, !symbolMode else { return }
+        emit(.literal(symbol))
+    }
+
     fileprivate func acquire(_ button: OwnedKeyboardButton) -> Bool {
         guard ownerTouch == nil, ownerButton == nil else { return false }
         if (englishMode || symbolMode) && button !== deleteButton && !isSpace(button) && isIndependentTypingKey(button) {
@@ -610,6 +635,28 @@ public final class KeyboardView: UIView {
 private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
     weak var keyboard: KeyboardView?
     private var ownsTouch = false
+    private var flickSymbol: String?
+    private var flickOrigin = CGPoint.zero
+    private var flickDirection = 0
+    private var flickLetter: String?
+    private let flickHint = UILabel()
+
+    func setFlickSymbol(_ symbol: String?, letter: String) {
+        flickSymbol = symbol
+        flickLetter = letter
+        flickHint.text = symbol
+        flickHint.font = .systemFont(ofSize: 9, weight: .semibold)
+        flickHint.textColor = .secondaryLabel
+        flickHint.textAlignment = .right
+        flickHint.isUserInteractionEnabled = false
+        flickHint.isAccessibilityElement = false
+        addSubview(flickHint)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        flickHint.frame = CGRect(x: max(0, bounds.width - 15), y: max(0, bounds.height - 13), width: 12, height: 12)
+    }
 
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         // A rejected second-finger Shift touch must not later enable Caps Lock.
@@ -619,6 +666,8 @@ private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard keyboard?.acquire(self) == true else { return }
         ownsTouch = true
+        flickDirection = 0
+        if let touch = touches.first { flickOrigin = touch.location(in: self) }
         super.touchesBegan(touches, with: event)
         keyboard?.beginDeleteHold(self)
         if let touch = touches.first { keyboard?.beginSpaceDrag(self, at: touch.location(in: keyboard)) }
@@ -626,6 +675,11 @@ private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if ownsTouch {
+            if flickSymbol != nil, let touch = touches.first {
+                let location = touch.location(in: self)
+                let dx = location.x - flickOrigin.x, dy = location.y - flickOrigin.y
+                if flickDirection == 0 { flickDirection = EnglishKeyboard.flickDirection(dx: dx, dy: dy) }
+            }
             if let touch = touches.first { keyboard?.moveSpaceDrag(self, to: touch.location(in: keyboard)) }
             super.touchesMoved(touches, with: event)
             if let touch = touches.first, !bounds.contains(touch.location(in: self)) {
@@ -636,8 +690,21 @@ private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard ownsTouch else { return }
-        if let touch = touches.first { keyboard?.moveSpaceDrag(self, to: touch.location(in: keyboard)) }
-        super.touchesEnded(touches, with: event)
+        if let touch = touches.first {
+            keyboard?.moveSpaceDrag(self, to: touch.location(in: keyboard))
+            if flickSymbol != nil {
+                let location = touch.location(in: self)
+                let dx = location.x - flickOrigin.x, dy = location.y - flickOrigin.y
+                if flickDirection == 0 { flickDirection = EnglishKeyboard.flickDirection(dx: dx, dy: dy) }
+            }
+        }
+        if flickDirection != 0, let symbol = flickSymbol, let letter = flickLetter {
+            super.cancelTracking(with: event)
+            if flickDirection < 0 { keyboard?.insertEnglishUppercase(letter) }
+            else { keyboard?.insertEnglishFlick(symbol) }
+        } else {
+            super.touchesEnded(touches, with: event)
+        }
         ownsTouch = false
         keyboard?.release(self)
     }
