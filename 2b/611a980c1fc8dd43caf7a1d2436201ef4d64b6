@@ -1,0 +1,34 @@
+ios/Tests/CoreTests/SpaceCursorGestureTests.swift
+  s_a5e1472697f7cb::t_53fc16ed5f7e49 20,22-27,31-39
+ios/Core/SpaceCursorGesture.swift
+  s_a5e1472697f7cb::t_8f73eb8763e1ff 3,8-10,15,21-22,24-29,33-37,43-46,50-69
+  s_a5e1472697f7cb::t_4b27b3f84d3e26 70
+ios/DocumentBridge/DocumentSession.swift
+  s_a5e1472697f7cb::t_8f73eb8763e1ff 100-120
+ios/SharedUI/KeyboardView.swift
+  s_a5e1472697f7cb::t_8f73eb8763e1ff 8
+  s_a5e1472697f7cb::t_1c0599b54880fd 575,577
+ios/Tests/DocumentTests/DocumentSessionTests.swift
+  s_a5e1472697f7cb::t_53fc16ed5f7e49 489-519
+  s_a5e1472697f7cb::t_d5d36a1b25f647 438
+ios/App/HostViewController.swift
+  s_a5e1472697f7cb::t_8f73eb8763e1ff 92-105
+ios/KeyboardExtension/KeyboardViewController.swift
+  s_a5e1472697f7cb::t_8f73eb8763e1ff 37-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2b611a980c1fc8dd43caf7a1d2436201ef4d64b6",
+  "prompts": {},
+  "sessions": {
+    "s_a5e1472697f7cb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a166a2-9f2b-75c3-b30d-57ae412b986c",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "UnopndJude <101383622+UnopndJude@users.noreply.github.com>"
+    }
+  }
+}
