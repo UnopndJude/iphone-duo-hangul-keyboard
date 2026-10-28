@@ -1,0 +1,42 @@
+ios/Tests/DocumentTests/DocumentSessionTests.swift
+  s_a5e1472697f7cb::t_648f8895aa9993 438-455
+  s_a5e1472697f7cb::t_364e63693ce0d8 456-485
+  s_a5e1472697f7cb::t_53fc16ed5f7e49 486-487
+ios/Core/KeyboardSizing.swift
+  s_a5e1472697f7cb::t_5489ca06ddbbac 34
+ios/Tests/CoreTests/KeyboardSizingTests.swift
+  s_a5e1472697f7cb::t_5489ca06ddbbac 43
+ios/Tests/CoreTests/AnchoredGestureTests.swift
+  s_a5e1472697f7cb::t_789e5c2c905863 204-206,230
+  s_a5e1472697f7cb::t_5489ca06ddbbac 51-66
+  s_a5e1472697f7cb::t_ef902725c10f8a 244-258,260-263,265-269,273-283,287
+  s_a5e1472697f7cb::t_76c5668e0ddb68 259,264,270-272,284-286,288-290
+  s_a5e1472697f7cb::t_648f8895aa9993 28,35-50,74,200,220
+ios/SharedUI/KeyboardView.swift
+  s_a5e1472697f7cb::t_5489ca06ddbbac 18
+  s_a5e1472697f7cb::t_a1179111edf3d1 697
+  s_a5e1472697f7cb::t_483034576aa052 698-703,719
+ios/Core/AnchoredGesture.swift
+  s_a5e1472697f7cb::t_bab4a1f837f729 12-20,45,47,53-60
+  s_a5e1472697f7cb::t_a1179111edf3d1 8-10,24,43-44,46,48-52,61-62,65-68,71,74
+ios/Core/JoystickMapping.swift
+  s_a5e1472697f7cb::t_648f8895aa9993 18,21,23-24
+  s_a5e1472697f7cb::t_789e5c2c905863 33-35
+  s_a5e1472697f7cb::t_5489ca06ddbbac 37-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a6e98393c7eed6c6fca4e30a4e5914ed37207879",
+  "prompts": {},
+  "sessions": {
+    "s_a5e1472697f7cb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a166a2-9f2b-75c3-b30d-57ae412b986c",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "UnopndJude <101383622+UnopndJude@users.noreply.github.com>"
+    }
+  }
+}
