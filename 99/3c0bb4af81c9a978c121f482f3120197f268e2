@@ -1,0 +1,26 @@
+ios/SharedUI/KeyboardView.swift
+  s_a5e1472697f7cb::t_5fb2d0d0f2fac9 693
+  s_a5e1472697f7cb::t_2e47a33d088a23 119-132,522-532,638-659,669-670,678-682,694-707
+ios/Core/EnglishKeyboard.swift
+  s_a5e1472697f7cb::t_5fb2d0d0f2fac9 1-2,7-19,22,52
+  s_a5e1472697f7cb::t_d14c77f2b4577a 20-21,46-51,53
+ios/Tests/CoreTests/EnglishKeyboardTests.swift
+  s_a5e1472697f7cb::t_5fb2d0d0f2fac9 72,88,90-97
+  s_a5e1472697f7cb::t_73097f2f4d39b0 59-71,73-87,89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "993c0bb4af81c9a978c121f482f3120197f268e2",
+  "prompts": {},
+  "sessions": {
+    "s_a5e1472697f7cb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a166a2-9f2b-75c3-b30d-57ae412b986c",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "UnopndJude <101383622+UnopndJude@users.noreply.github.com>"
+    }
+  }
+}
