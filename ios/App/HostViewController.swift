@@ -97,7 +97,8 @@ final class HostViewController: UIViewController {
             self.refreshPractice()
         }
         keyboard.onMoveLine = { [weak self] steps in
-            guard let self else { return }
+            guard let self else { return false }
+            var moved = false
             self.practicePrefix += self.model.text
             self.model.reset()
             for _ in 0..<min(abs(steps), 8) {
@@ -107,8 +108,10 @@ final class HostViewController: UIViewController {
                 guard let boundary = String.Index(utf16Offset: index, in: whole).samePosition(in: whole) else { break }
                 self.practicePrefix = String(whole[..<boundary])
                 self.practiceSuffix = String(whole[boundary...])
+                moved = true
             }
             self.refreshPractice()
+            return moved
         }
         keyboard.onHelp = { [weak self] in self?.showGestureHelp() }
 
@@ -139,7 +142,7 @@ final class HostViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let isCompact = view.bounds.width > view.bounds.height
-        keyboardHeight.constant = KeyboardSizing.contentHeight(screenHeight: view.bounds.height, bottomInset: 0)
+        keyboardHeight.constant = KeyboardSizing.contentHeight(screenHeight: view.bounds.height, bottomInset: 0, screenWidth: view.bounds.width)
         guidance.isHidden = isCompact
         topBar.isHidden = isCompact
     }
@@ -206,7 +209,7 @@ final class HostViewController: UIViewController {
     private func showGestureHelp() {
         let alert = UIAlertController(
             title: "세 판 사용법",
-            message: "왼쪽 자음 원 · 오른쪽 모음 원\n\nㅇ: 탭 ㅇ / 좌우 ㅎ / 위 6 / 아래 7\nㅈ: 탭 ㅈ / 위 ㅉ / 좌우 ㅊ / 아래 ~\nㄴ: 탭 ㄴ / 아래 ㄷ / 위 ㄸ / 좌우 ㅌ\nㅣ: 탭 ㅣ / 위 ㅗ / 아래 ㅜ / 왼쪽 ㅓ / 오른쪽 ㅏ\n\n··는 방향으로만 입력합니다. ㅒ: ·· 또는 ㅡ에서 오른쪽으로 밀고 손을 떼지 않은 채 왼쪽으로 되돌리기. ㅖ: 왼쪽으로 밀고 오른쪽으로 되돌리기. ㅑ·ㅕ 후 가운데 ㅣ를 탭해도 됩니다.\n\n영어는 하단 ABC로 전환합니다. 글자를 위로 밀면 대문자, 아래로 밀면 키 오른쪽 아래에 표시된 숫자·기호가 입력됩니다. ⇧는 한 글자 대문자, 길게 누르면 대문자 고정입니다. 넓은 화면에서는 QWERTY가 좌우로 나뉩니다. 한글 버튼으로 돌아옵니다.\n\n자음 원의 빈 방향으로 숫자를 입력합니다. ㄹ 위 1 / 왼쪽 2 / 오른쪽 3 / 아래 4, ㄱ 아래 5, ㅇ 위 6 / 아래 7, ㅅ 왼쪽 8 / 오른쪽 9 / 아래 0. 숫자와 기호는 하단 123에서도 입력합니다. 첫 페이지에는 0–9와 ~가 있습니다. #+=로 괄호·계산·통화 페이지를 엽니다. 123으로 첫 페이지에 돌아옵니다. 회전해도 페이지와 키 순서는 유지됩니다. 넓은 화면은 중앙 여백과 양쪽 공백 키를 제공합니다.\n\n모음 원에서 모음과 기호가 번갈아 배치됩니다. 기호: . 탭 마침표 / 왼쪽 쉼표 / 오른쪽 _ / 위·아래 따옴표. ? 탭 물음표 / 위 느낌표 / 오른쪽 -. / 탭 슬래시 / 왼쪽 @ / 오른쪽 =. 중앙은 ㅇ·ㅣ입니다. 원 밖과 중앙 둘레의 좁은 경계는 입력하지 않습니다. 손을 떼기 전까지 시작 글자가 고정됩니다.",
+            message: "왼쪽 자음 원 · 오른쪽 모음 원\n\nㅇ: 탭 ㅇ / 좌우 ㅎ / 위 6 / 아래 7\nㅈ: 탭 ㅈ / 위 ㅉ / 좌우 ㅊ / 아래 ~\nㄴ: 탭 ㄴ / 아래 ㄷ / 위 ㄸ / 좌우 ㅌ\nㅣ: 탭 ㅣ / 위 ㅗ / 아래 ㅜ / 왼쪽 ㅓ / 오른쪽 ㅏ\n\n··는 방향으로만 입력합니다. ㅒ: ·· 또는 ㅡ에서 오른쪽으로 밀고 손을 떼지 않은 채 왼쪽으로 되돌리기. ㅖ: 왼쪽으로 밀고 오른쪽으로 되돌리기. ㅑ·ㅕ 후 가운데 ㅣ를 탭해도 됩니다.\n\n영어는 하단 ABC로 전환합니다. 글자를 위로 밀면 대문자, 아래로 밀면 키 오른쪽 아래에 표시된 숫자·기호가 입력됩니다. ⇧는 한 글자 대문자, 길게 누르면 대문자 고정입니다. 넓은 화면에서는 QWERTY가 좌우로 나뉩니다. 한글 버튼으로 돌아옵니다.\n\n좁은 화면: ㅅ 왼쪽 1 / 아래 2 / 오른쪽 3, ㅇ 왼쪽 4 / 아래 5 / 오른쪽 6, ㅎ 왼쪽 7 / 아래 8 / 오른쪽 9 / 위 0. ㄱ 아래 #, ㄹ 위 ^ / 왼쪽 = / 아래 _ / 오른쪽 -. 넓은 화면은 자음 원의 빈 방향으로 숫자를 입력합니다. ㄹ 위 1 / 왼쪽 2 / 오른쪽 3 / 아래 4, ㄱ 아래 5, ㅇ 위 6 / 아래 7, ㅅ 왼쪽 8 / 오른쪽 9 / 아래 0. 숫자와 기호는 하단 123에서도 입력합니다. 첫 페이지에는 0–9와 ~가 있습니다. #+=로 괄호·계산·통화 페이지를 엽니다. 123으로 첫 페이지에 돌아옵니다. 회전해도 페이지와 키 순서는 유지됩니다. 넓은 화면은 중앙 여백과 양쪽 공백 키를 제공합니다.\n\n모음 원에서 모음과 기호가 번갈아 배치됩니다. 기호: . 탭 마침표 / 왼쪽 쉼표 / 오른쪽 _ / 위·아래 따옴표. ? 탭 물음표 / 위 느낌표 / 오른쪽 -. / 탭 슬래시 / 왼쪽 @ / 오른쪽 =. 중앙은 ㅇ·ㅣ입니다. 원 밖과 중앙 둘레의 좁은 경계는 입력하지 않습니다. 손을 떼기 전까지 시작 글자가 고정됩니다.",
             preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default))
         present(alert, animated: true)

@@ -52,7 +52,7 @@ public struct SpaceCursorGesture {
 /// expose visual wrapping or prove that its context is complete.
 public enum CursorLine {
     public static func offset(before: String?, after: String?, direction: Int) -> Int? {
-        guard let before, let after, direction != 0 else { return nil }
+        guard let before, direction != 0 else { return nil }
         let column = before.split(separator: "\n", omittingEmptySubsequences: false).last.map(String.init) ?? ""
         if direction < 0 {
             guard let end = before.lastIndex(of: "\n") else { return nil }
@@ -61,7 +61,7 @@ public enum CursorLine {
             let position = min(column.count, previous.count)
             return -(String(previous.dropFirst(position)) + "\n" + column).utf16.count
         }
-        guard let end = after.firstIndex(of: "\n") else { return nil }
+        guard let after, let end = after.firstIndex(of: "\n") else { return nil }
         let rest = String(after[after.index(after: end)...])
         let next = rest.split(separator: "\n", omittingEmptySubsequences: false).first.map(String.init) ?? ""
         let suffix = String(after[...end])

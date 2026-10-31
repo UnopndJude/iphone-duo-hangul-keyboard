@@ -23,6 +23,19 @@ public enum JoystickMapping {
         Key(label: "ㅅ", outputs: [.tap:"ㅅ", .n:"ㅆ", .w:"8", .e:"9", .s:"0"]),
         Key(label: "ㄹ", outputs: [.tap:"ㄹ", .n:"1", .w:"2", .e:"3", .s:"4"])
     ]
+    /// Screenshot-compatible mappings for the narrow Dingul-style grid.
+    public static let gridConsonants: [Key] = [
+        Key(label: "ㄱ", outputs: [.tap:"ㄱ", .n:"ㄲ", .w:"ㅋ", .e:"ㅋ", .s:"#"]),
+        Key(label: "ㄴ", outputs: [.tap:"ㄴ", .n:"ㄸ", .s:"ㄷ", .w:"ㅌ", .e:"ㅌ"]),
+        Key(label: "ㄹ", outputs: [.tap:"ㄹ", .n:"^", .w:"=", .e:"-", .s:"_"]),
+        Key(label: "ㅁ", outputs: [.tap:"ㅁ", .n:"ㅃ", .s:"ㅂ", .w:"ㅍ", .e:"ㅍ"]),
+        Key(label: "ㅅ", outputs: [.tap:"ㅅ", .n:"ㅆ", .w:"1", .s:"2", .e:"3"]),
+        Key(label: "ㅇ", outputs: [.tap:"ㅇ", .n:"❤️", .w:"4", .s:"5", .e:"6"]),
+        Key(label: "ㅈ", outputs: [.tap:"ㅈ", .n:"ㅉ", .w:"ㅊ", .e:"ㅊ", .s:"~"]),
+        Key(label: "ㅎ", outputs: [.tap:"ㅎ", .n:"0", .w:"7", .s:"8", .e:"9"])
+    ]
+    public static func gridKeys(_ pad: Pad) -> [Key] { pad == .c ? gridConsonants : keys(pad) }
+
     public static let vowels: [Key] = [
         Key(label: "ㅢ", outputs: [.tap:"ㅢ", .n:"ㅚ", .s:"ㅟ", .w:"ㅝ", .e:"ㅘ"]),
         Key(label: "ㅣ", outputs: [.tap:"ㅣ", .n:"ㅗ", .s:"ㅜ", .w:"ㅓ", .e:"ㅏ"]),
@@ -43,6 +56,39 @@ public enum JoystickMapping {
     }
     public static func centralKey(_ pad: Pad) -> Key? { keys(pad).first { $0.label == (pad == .c ? "ㅇ" : "ㅣ") } }
     public static func ringKeys(_ pad: Pad) -> [Key] { keys(pad).filter { $0.label != centralKey(pad)?.label } }
+    public static func usesGrid(keyboardWidth: CGFloat) -> Bool { keyboardWidth < 600 }
+
+    /// Rows use their complete rectangular cells for hit testing. Only the
+    /// drawn key has a gutter, so gaps never discard a valid starting touch.
+    public static func gridFrames(pad: Pad, bounds: CGRect) -> [(key: Key, frame: CGRect)] {
+        guard bounds.width.isFinite, bounds.height.isFinite, bounds.width > 0, bounds.height > 0 else { return [] }
+        let rows: [[String]] = pad == .c
+            ? [["ㄱ", "ㄴ"], ["ㄹ", "ㅁ"], ["ㅅ", "ㅇ"], ["ㅈ", "ㅎ"]]
+            : pad == .v ? [["ㅢ", "delete"], ["ㅣ", "?"], ["ㅡ", "."], ["··", "/"]] : []
+        return rows.enumerated().flatMap { row, labels in
+            labels.enumerated().compactMap { column, label in
+                guard let key = gridKeys(pad).first(where: { $0.label == label }) else { return nil }
+                // The vowel bank contains one full-width vowel column and
+                // a narrower symbol column (60% of a letter key).
+                let fraction: CGFloat = pad == .v ? 0.625 : 0.5
+                let x = column == 0 ? bounds.minX : bounds.minX + bounds.width * fraction
+                let width = bounds.width * (column == 0 ? fraction : 1 - fraction)
+                return (key, CGRect(x: x, y: bounds.minY + CGFloat(row) * bounds.height / 4,
+                                    width: width, height: bounds.height / 4))
+            }
+        }
+    }
+
+    public static func gridControlFrame(in bounds: CGRect) -> CGRect {
+        CGRect(x: bounds.minX + bounds.width * 0.625, y: bounds.minY,
+               width: bounds.width * 0.375, height: bounds.height / 4)
+    }
+
+    public static func gridKey(pad: Pad, at point: CGPoint, bounds: CGRect) -> Key? {
+        guard point.x.isFinite, point.y.isFinite, bounds.contains(point) else { return nil }
+        return gridFrames(pad: pad, bounds: bounds).first { $0.frame.contains(point) }?.key
+    }
+
     public static let directions: [(Direction, String)] = [(.n,"↑"), (.e,"→"), (.s,"↓"), (.w,"←")]
     public static let hubRatio: CGFloat = 0.19
     public static let hubGap: CGFloat = 4

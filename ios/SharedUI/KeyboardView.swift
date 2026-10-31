@@ -1,11 +1,12 @@
 import UIKit
 
 /// Shared by the keyboard extension and the containing app's practice screen.
-/// Joystick gestures own one touch; letter and symbol keys allow overlapping thumbs.
+/// Hangul contacts track independent gestures and commit in touch-down order.
 public final class KeyboardView: UIView {
     public var onAction: ((KeyboardAction) -> Void)?
     public var onMoveCursor: ((Int) -> Void)?
-    public var onMoveLine: ((Int) -> Void)?
+    public var onMoveLine: ((Int) -> Bool)?
+    public var isCursorDragging: Bool { spaceCursor.isDragging }
     public var onDismiss: (() -> Void)?
     public var onHelp: (() -> Void)?
     public var onLanguageChange: ((String) -> Void)?
@@ -35,9 +36,15 @@ public final class KeyboardView: UIView {
     private let dismissButton = OwnedKeyboardButton(type: .system)
     private var symbolButtons: [OwnedKeyboardButton] = []
     private var symbolMode = false
-    private var classifier = AnchoredGesture()
-    private var ownerTouch: UITouch?
-    private weak var ownerPad: DirectionPad?
+    private final class HangulContact {
+        let touch: UITouch
+        let pad: DirectionPad
+        var classifier = AnchoredGesture()
+        var lastCandidate: String?
+        init(touch: UITouch, pad: DirectionPad) { self.touch = touch; self.pad = pad }
+    }
+    private var contacts: [UITouch: HangulContact] = [:]
+    private var pendingHangul = OrderedTouchActions<UITouch, KeyboardAction>()
     private weak var ownerButton: OwnedKeyboardButton?
     private var typingTouches: Set<OwnedKeyboardButton> = []
     private var lastLayoutBounds: CGRect = .zero
@@ -50,7 +57,6 @@ public final class KeyboardView: UIView {
     private var deleteHoldStarted: CFTimeInterval = 0
     private var lastBlockDelete: CFTimeInterval = 0
     private var didRepeatDelete = false
-    private var lastCandidate: String?
 
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -211,7 +217,7 @@ public final class KeyboardView: UIView {
     public func update(target: String?, canUndoModifier: Bool) {
         self.target = target
         self.canUndoModifier = canUndoModifier
-        if ownerTouch == nil { updateIdleStatus() }
+        if contacts.isEmpty { updateIdleStatus() }
     }
 
     public func cancelGesture() {
@@ -222,11 +228,9 @@ public final class KeyboardView: UIView {
             recognizer.isEnabled = false
             recognizer.isEnabled = true
         }
-        classifier.cancel()
-        ownerTouch = nil
-        ownerPad?.preview = nil
-        ownerPad = nil
-        lastCandidate = nil
+        contacts.removeAll()
+        pendingHangul = OrderedTouchActions()
+        for pad in inputSurfaces { pad.preview = nil }
         ownerButton?.cancelTracking(with: nil)
         ownerButton = nil
         let activeTypingButtons = Array(typingTouches)
@@ -256,6 +260,8 @@ public final class KeyboardView: UIView {
             lastLayoutBounds = bounds
             lastSafeArea = safeAreaInsets
         }
+        deleteButton.touchExpansion = 0
+        returnButton.touchExpansion = 0
         let inset: CGFloat = 6
         // Fill the keyboard surface supplied by the host. A fixed width cap
         // and extra horizontal safe-area subtraction left wide devices with
@@ -282,8 +288,17 @@ public final class KeyboardView: UIView {
         let reserved = metrics.reserved
         let diameter = metrics.diameter
         let circleY = padY + reserved + (padHeight - reserved - diameter) / 2
-        cPad.frame = CGRect(x: left, y: circleY, width: diameter, height: diameter)
-        vPad.frame = CGRect(x: left + width - diameter, y: circleY, width: diameter, height: diameter)
+        let grid = JoystickMapping.usesGrid(keyboardWidth: bounds.width)
+        cPad.usesGrid = grid
+        vPad.usesGrid = grid
+        if grid {
+            let unit = (width - gap) / 3.6
+            cPad.frame = CGRect(x: left, y: padY, width: unit * 2, height: padHeight)
+            vPad.frame = CGRect(x: left + unit * 2 + gap, y: padY, width: unit * 1.6, height: padHeight)
+        } else {
+            cPad.frame = CGRect(x: left, y: circleY, width: diameter, height: diameter)
+            vPad.frame = CGRect(x: left + width - diameter, y: circleY, width: diameter, height: diameter)
+        }
         cPad.isHidden = symbolMode || englishMode
         vPad.isHidden = symbolMode || englishMode
         nextKeyboardButton.isHidden = !needsNextKeyboard
@@ -311,7 +326,7 @@ public final class KeyboardView: UIView {
         for button in symbolButtons { button.isHidden = true }
         languageButton.isHidden = false
         dismissButton.isHidden = onDismiss == nil
-        var controls: [UIButton] = [modeButton, languageButton, spaceButton, deleteButton, returnButton]
+        var controls: [UIButton] = grid ? [modeButton, languageButton, spaceButton, returnButton] : [modeButton, languageButton, spaceButton, deleteButton, returnButton]
         if onDismiss != nil { controls.append(dismissButton) }
         if needsNextKeyboard { controls.insert(nextKeyboardButton, at: 0) }
         let fixed = min(compact ? 52 : 48, (width - gap * CGFloat(controls.count - 1)) / CGFloat(controls.count))
@@ -323,64 +338,77 @@ public final class KeyboardView: UIView {
             button.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
             x += itemWidth + gap
         }
+        if grid {
+            deleteButton.touchExpansion = 2
+            deleteButton.frame = JoystickMapping.gridControlFrame(in: vPad.frame).insetBy(dx: 2, dy: 2)
+        }
     }
 
     public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         guard !isHidden, alpha > 0.01, isUserInteractionEnabled, bounds.contains(point) else { return nil }
         // Further fingers cannot activate a button while another contact owns input.
-        if ownerTouch != nil || ownerButton != nil { return self }
+        if ownerButton != nil { return self }
+        if !symbolMode && !englishMode && cPad.usesGrid,
+           JoystickMapping.gridControlFrame(in: vPad.frame).contains(point) { return super.hitTest(point, with: event) }
         if !symbolMode && !englishMode, inputSurfaces.contains(where: { !$0.isHidden && $0.frame.contains(point) }) { return self }
         return super.hitTest(point, with: event)
     }
 
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard ownerTouch == nil, ownerButton == nil, !symbolMode, !englishMode else { return }
-        // Deterministic ownership when two touches enter in the same event.
-        guard let touch = touches.min(by: { $0.timestamp < $1.timestamp }) else { return }
-        let location = touch.location(in: self)
-        guard let pad = inputSurfaces.first(where: {
-            !$0.isHidden && ($0.fixedKey != nil ? $0.frame.contains(location) : AnchoredGesture.symbol(pad: $0.pad, at: location, bounds: $0.frame) != nil)
-        }) else { return }
-        ownerTouch = touch
-        ownerPad = pad
-        if let key = pad.fixedKey { classifier.begin(key: key, at: location, bounds: pad.frame) }
-        else { classifier.begin(pad: pad.pad, at: location, bounds: pad.frame) }
-        feedback?.prepare()
-        updatePreview()
+        guard ownerButton == nil, !symbolMode, !englishMode else { return }
+        for touch in touches.sorted(by: { $0.timestamp < $1.timestamp }) {
+            let location = touch.location(in: self)
+            guard let pad = inputSurfaces.first(where: {
+                !$0.isHidden && $0.startingKey(at: location) != nil
+            }) else { continue }
+            let contact = HangulContact(touch: touch, pad: pad)
+            if let key = pad.startingKey(at: location), pad.usesGrid || pad.fixedKey != nil {
+                contact.classifier.begin(key: key, at: location, bounds: pad.frame)
+            } else { contact.classifier.begin(pad: pad.pad, at: location, bounds: pad.frame) }
+            contacts[touch] = contact
+            pendingHangul.begin(touch)
+            feedback?.prepare()
+            updatePreview(contact)
+        }
     }
 
     public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = ownerTouch, touches.contains(touch) else { return }
-        // Coalesced samples retain an excursion even when a fast move returns to its origin.
-        for sample in event?.coalescedTouches(for: touch) ?? [touch] {
-            classifier.move(to: sample.location(in: self))
+        for touch in touches {
+            guard let contact = contacts[touch] else { continue }
+            for sample in event?.coalescedTouches(for: touch) ?? [touch] {
+                contact.classifier.move(to: sample.location(in: self))
+            }
+            updatePreview(contact)
         }
-        updatePreview()
     }
 
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = ownerTouch, touches.contains(touch) else { return }
-        classifier.move(to: touch.location(in: self))
-        // A quick reversal can be delivered only in touchesEnded. Give its
-        // final candidate the same feedback as a move sample.
-        updatePreview()
-        let action = classifier.end(at: touch.location(in: self))
-        ownerPad?.preview = nil
-        ownerPad = nil
-        ownerTouch = nil
-        lastCandidate = nil
-        // The joystick already gives feedback when its candidate changes.
-        if let action { emit(action, giveFeedback: false) }
-        else { statusLabel.text = "이번 움직임은 취소했어요" }
+        finishContacts(touches, cancelled: false)
     }
 
     public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let ownerTouch, touches.contains(ownerTouch) else { return }
-        cancelGesture()
+        finishContacts(touches, cancelled: true)
     }
 
-    private func updatePreview() {
-        guard let pad = ownerPad else { return }
+    private func finishContacts(_ touches: Set<UITouch>, cancelled: Bool) {
+        for touch in touches.sorted(by: { $0.timestamp < $1.timestamp }) {
+            guard let contact = contacts.removeValue(forKey: touch) else { continue }
+            var action: KeyboardAction?
+            if !cancelled {
+                contact.classifier.move(to: touch.location(in: self))
+                updatePreview(contact)
+                action = contact.classifier.end(at: touch.location(in: self))
+            }
+            contact.pad.preview = nil
+            let ready = pendingHangul.finish(touch, action: action)
+            for action in ready { emit(action, giveFeedback: false) }
+        }
+        for contact in contacts.values { updatePreview(contact) }
+    }
+
+    private func updatePreview(_ contact: HangulContact) {
+        let pad = contact.pad
+        let classifier = contact.classifier
         let preview = classifier.preview
         pad.selectedBase = classifier.base
         pad.preview = preview
@@ -388,13 +416,13 @@ public final class KeyboardView: UIView {
         switch preview.kind {
         case .tap, .direction:
             let candidate = classifier.candidate
-            let key = pad.fixedKey ?? JoystickMapping.keys(pad.pad).first { $0.label == classifier.base }
+            let key = pad.startingKey(at: preview.origin)
             let hints = JoystickMapping.directions.compactMap { direction, arrow in key?.outputs[direction].map { arrow + $0 } }.joined(separator: " ")
             statusLabel.text = candidate.map { "놓으면 \($0) · \(hints)" } ?? "\(hints) · 놓으면 취소"
-            if candidate != lastCandidate, candidate != nil {
+            if candidate != contact.lastCandidate, candidate != nil {
                 feedback?.impactOccurred()
                 feedback?.prepare()
-                lastCandidate = candidate
+                contact.lastCandidate = candidate
             }
         case .uncertain:
             statusLabel.text = "방향을 더 분명히 밀어 주세요 · 놓으면 취소"
@@ -537,7 +565,7 @@ public final class KeyboardView: UIView {
     }
 
     fileprivate func acquire(_ button: OwnedKeyboardButton) -> Bool {
-        guard ownerTouch == nil, ownerButton == nil else { return false }
+        guard pendingHangul.isEmpty, ownerButton == nil else { return false }
         if (englishMode || symbolMode) && button !== deleteButton && !isSpace(button) && isIndependentTypingKey(button) {
             // Separate letter/symbol contacts may overlap. A mode/page/Shift control still
             // waits until they end so it cannot change pending key meanings.
@@ -553,7 +581,11 @@ public final class KeyboardView: UIView {
 
     fileprivate func release(_ button: OwnedKeyboardButton) {
         if button === deleteButton { stopDeleteHold(); didRepeatDelete = false }
-        if isSpace(button) { spaceCursor = SpaceCursorGesture() }
+        if isSpace(button) {
+            spaceCursor = SpaceCursorGesture()
+            spaceButton.setTitle(englishMode ? "space" : "공백", for: .normal)
+            rightSpaceButton.setTitle(englishMode ? "space" : "공백", for: .normal)
+        }
         if ownerButton === button { ownerButton = nil }
         typingTouches.remove(button)
     }
@@ -566,7 +598,7 @@ public final class KeyboardView: UIView {
 
     @objc private func showHelp() { onHelp?() }
     @objc private func dismissKeyboard() { cancelGesture(); onDismiss?() }
-    private func isSpace(_ button: OwnedKeyboardButton) -> Bool {
+    fileprivate func isSpace(_ button: OwnedKeyboardButton) -> Bool {
         button === spaceButton || button === rightSpaceButton
     }
 
@@ -579,7 +611,11 @@ public final class KeyboardView: UIView {
         let steps = spaceCursor.move(to: point)
         let lineSteps = spaceCursor.takeVerticalSteps()
         if steps != 0 { feedback?.impactOccurred(); feedback?.prepare(); onMoveCursor?(steps) }
-        if lineSteps != 0 { feedback?.impactOccurred(); feedback?.prepare(); onMoveLine?(lineSteps) }
+        if lineSteps != 0 {
+            let moved = onMoveLine?(lineSteps) ?? false
+            if moved { feedback?.impactOccurred(); feedback?.prepare() }
+            button.setTitle(moved ? (lineSteps < 0 ? "↑ 이전 줄" : "↓ 다음 줄") : "줄 정보 없음", for: .normal)
+        }
     }
 
     @objc private func insertSpace() {
@@ -643,6 +679,10 @@ public final class KeyboardView: UIView {
 private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
     weak var keyboard: KeyboardView?
     private var ownsTouch = false
+    var touchExpansion: CGFloat = 0
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        bounds.insetBy(dx: -touchExpansion, dy: -touchExpansion).contains(point)
+    }
     private var flickSymbol: String?
     private var flickOrigin = CGPoint.zero
     private var flickDirection = 0
@@ -676,6 +716,11 @@ private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
         ownsTouch = true
         flickDirection = 0
         if let touch = touches.first { flickOrigin = touch.location(in: self) }
+        if keyboard?.isSpace(self) == true {
+            isHighlighted = true
+            if let touch = touches.first { keyboard?.beginSpaceDrag(self, at: touch.location(in: keyboard)) }
+            return
+        }
         super.touchesBegan(touches, with: event)
         keyboard?.beginDeleteHold(self)
         if let touch = touches.first { keyboard?.beginSpaceDrag(self, at: touch.location(in: keyboard)) }
@@ -683,6 +728,10 @@ private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if ownsTouch {
+            if keyboard?.isSpace(self) == true {
+                if let touch = touches.first { keyboard?.moveSpaceDrag(self, to: touch.location(in: keyboard)) }
+                return
+            }
             if flickSymbol != nil, let touch = touches.first {
                 let location = touch.location(in: self)
                 let dx = location.x - flickOrigin.x, dy = location.y - flickOrigin.y
@@ -698,6 +747,16 @@ private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard ownsTouch else { return }
+        if keyboard?.isSpace(self) == true {
+            if let touch = touches.first {
+                keyboard?.moveSpaceDrag(self, to: touch.location(in: keyboard))
+                if ownsTouch && bounds.contains(touch.location(in: self)) { sendActions(for: .touchUpInside) }
+            }
+            isHighlighted = false
+            ownsTouch = false
+            keyboard?.release(self)
+            return
+        }
         if let touch = touches.first {
             keyboard?.moveSpaceDrag(self, to: touch.location(in: keyboard))
             if flickSymbol != nil {
@@ -720,12 +779,14 @@ private final class OwnedKeyboardButton: UIButton, UIGestureRecognizerDelegate {
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard ownsTouch else { return }
         super.touchesCancelled(touches, with: event)
+        isHighlighted = false
         ownsTouch = false
         keyboard?.release(self)
     }
 
     override func cancelTracking(with event: UIEvent?) {
         super.cancelTracking(with: event)
+        isHighlighted = false
         ownsTouch = false
         keyboard?.release(self)
     }
@@ -745,6 +806,20 @@ private final class DirectionPad: UIView {
     let fixedKey: JoystickMapping.Key?
     var performAction: ((KeyboardAction) -> Void)?
     var preview: GesturePreview? { didSet { setNeedsDisplay() } }
+    var usesGrid = false {
+        didSet {
+            guard oldValue != usesGrid else { return }
+            accessibilityLabel = pad == .c ? (usesGrid ? "자음 격자 입력판" : "자음 원형 입력판")
+                : (usesGrid ? "모음·기호 격자 입력판" : "모음 원형 입력판")
+            configureAccessibilityActions()
+            setNeedsDisplay()
+        }
+    }
+    func startingKey(at point: CGPoint) -> JoystickMapping.Key? {
+        if let fixedKey { return fixedKey }
+        return usesGrid ? JoystickMapping.gridKey(pad: pad, at: point, bounds: frame)
+            : JoystickMapping.key(pad: pad, at: point, bounds: frame)
+    }
     var selectedBase: String?
     var gestureOriginInKeyboard = CGPoint.zero { didSet { setNeedsDisplay() } }
 
@@ -760,7 +835,10 @@ private final class DirectionPad: UIView {
         accessibilityIdentifier = fixedKey.map { "punctuation-" + $0.label } ?? "pad-\(pad.rawValue)"
         accessibilityLabel = fixedKey.map { "기호 " + $0.label } ?? (pad == .c ? "자음 원형 입력판" : "모음 원형 입력판")
         accessibilityHint = "글자에서 시작합니다. 동작 메뉴에서 글자와 방향을 선택하세요."
-        let keys = fixedKey.map { [$0] } ?? JoystickMapping.keys(pad)
+        configureAccessibilityActions()
+    }
+    private func configureAccessibilityActions() {
+        let keys = fixedKey.map { [$0] } ?? (usesGrid ? JoystickMapping.gridKeys(pad) : JoystickMapping.keys(pad))
         accessibilityCustomActions = keys.flatMap { key in
             ([(Direction.tap, "탭")] + JoystickMapping.directions).compactMap { direction, arrow in
                 guard let value = key.outputs[direction], let action = key.action(direction) else { return nil }
@@ -802,6 +880,19 @@ private final class DirectionPad: UIView {
             Palette.line.setStroke(); path.lineWidth = 1; path.stroke()
             drawKey(key, at: CGPoint(x: bounds.midX, y: bounds.midY), size: 20,
                     accent: Palette.blue, hints: true, offset: 15)
+            return
+        }
+        if usesGrid {
+            let accent = pad == .c ? Palette.blue : Palette.gold
+            for cell in JoystickMapping.gridFrames(pad: pad, bounds: bounds) {
+                let active = preview != nil && selectedBase == cell.key.label
+                let path = UIBezierPath(roundedRect: cell.frame.insetBy(dx: 2, dy: 2), cornerRadius: 8)
+                (active ? accent.withAlphaComponent(0.24) : Palette.control).setFill()
+                path.fill()
+                Palette.line.setStroke(); path.lineWidth = 0.5; path.stroke()
+                drawKey(cell.key, at: CGPoint(x: cell.frame.midX, y: cell.frame.midY), size: 21,
+                        accent: accent, hints: true, offset: min(18, cell.frame.height * 0.31, cell.frame.width * 0.31))
+            }
             return
         }
         let circle = JoystickMapping.circle(in: bounds).insetBy(dx: 1, dy: 1)

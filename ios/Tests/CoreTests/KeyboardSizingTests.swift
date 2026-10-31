@@ -81,3 +81,66 @@ final class DismissKeyLayoutTests: XCTestCase {
         }
     }
 }
+
+final class CompactHangulGridTests: XCTestCase {
+    func testDingulScreenshotDigitsAndSymbols() {
+        let keys = Dictionary(uniqueKeysWithValues: JoystickMapping.gridConsonants.map { ($0.label, $0) })
+        let digits: [(String, Direction, String)] = [
+            ("ㅅ", .w, "1"), ("ㅅ", .s, "2"), ("ㅅ", .e, "3"),
+            ("ㅇ", .w, "4"), ("ㅇ", .s, "5"), ("ㅇ", .e, "6"),
+            ("ㅎ", .w, "7"), ("ㅎ", .s, "8"), ("ㅎ", .e, "9"), ("ㅎ", .n, "0"),
+            ("ㄱ", .s, "#"), ("ㄹ", .n, "^"), ("ㄹ", .w, "="), ("ㄹ", .e, "-"), ("ㄹ", .s, "_"),
+            ("ㅇ", .n, "❤️"), ("ㅈ", .s, "~")
+        ]
+        for (label, direction, value) in digits { XCTAssertEqual(keys[label]?.action(direction), .literal(value)) }
+        var model = ThreePadModel()
+        for action in [keys["ㅎ"]!.action(.tap)!, .jamo("ㅏ"), keys["ㄴ"]!.action(.tap)!] { XCTAssertTrue(model.apply(action)) }
+        XCTAssertEqual(model.text, "한")
+    }
+
+    func testDingulRowOrder() {
+        let area = CGRect(x: 0, y: 0, width: 160, height: 200)
+        XCTAssertEqual(JoystickMapping.gridFrames(pad: .c, bounds: area).map { $0.key.label }, ["ㄱ", "ㄴ", "ㄹ", "ㅁ", "ㅅ", "ㅇ", "ㅈ", "ㅎ"])
+        XCTAssertEqual(JoystickMapping.gridFrames(pad: .v, bounds: area).map { $0.key.label }, ["ㅢ", "ㅣ", "?", "ㅡ", ".", "··", "/"])
+        XCTAssertEqual(JoystickMapping.gridControlFrame(in: area), CGRect(x: 100, y: 0, width: 60, height: 50))
+    }
+
+    func testEveryCellHasLargeTargetsAndNoDeadStartAreas() {
+        for width: CGFloat in [320, 375, 390, 430, 599] {
+            for height: CGFloat in [238, 250, 286, 320] {
+                let m = KeyboardSizing.metrics(width: width - 12, height: height, bottomInset: 0)
+                let unit = (width - 18) / 3.6
+                for pad in [Pad.c, .v] {
+                    let bank = CGRect(x: 6, y: m.padY, width: unit * (pad == .c ? 2 : 1.6), height: m.padHeight)
+                    let cells = JoystickMapping.gridFrames(pad: pad, bounds: bank)
+                    XCTAssertEqual(Set(cells.map { $0.key.label }), Set(JoystickMapping.keys(pad).map(\.label) + (pad == .c ? ["ㅎ"] : [])))
+                    for cell in cells {
+                        XCTAssertEqual(cell.frame.width, unit * (pad == .v && cell.frame.minX > bank.minX ? 0.6 : 1), accuracy: 0.001)
+                        XCTAssertEqual(cell.frame.height, bank.height / 4, accuracy: 0.001)
+                        XCTAssertGreaterThanOrEqual(cell.frame.width, 44)
+                        XCTAssertGreaterThanOrEqual(cell.frame.height, 44)
+                        let point = CGPoint(x: cell.frame.midX, y: cell.frame.midY)
+                        XCTAssertEqual(JoystickMapping.gridKey(pad: pad, at: point, bounds: bank)?.label, cell.key.label)
+                        for direction in JoystickMapping.directions.map(\.0) + [.tap] {
+                            var gesture = AnchoredGesture()
+                            gesture.begin(key: cell.key, at: point, bounds: bank)
+                            let end = CGPoint(x: point.x + (direction == .e ? 30 : direction == .w ? -30 : 0),
+                                              y: point.y + (direction == .s ? 30 : direction == .n ? -30 : 0))
+                            XCTAssertEqual(gesture.end(at: end), cell.key.action(direction))
+                        }
+                    }
+                    for x in stride(from: bank.minX + 0.5, to: bank.maxX, by: 4) {
+                        for y in stride(from: bank.minY + 0.5, to: bank.maxY, by: 4) {
+                            let point = CGPoint(x: x, y: y)
+                            if pad == .c || !JoystickMapping.gridControlFrame(in: bank).contains(point) {
+                                XCTAssertNotNil(JoystickMapping.gridKey(pad: pad, at: point, bounds: bank))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        XCTAssertTrue(JoystickMapping.usesGrid(keyboardWidth: 599))
+        XCTAssertFalse(JoystickMapping.usesGrid(keyboardWidth: 600))
+    }
+}

@@ -38,4 +38,9 @@ final class SpaceCursorGestureTests: XCTestCase {
         XCTAssertNil(CursorLine.offset(before: "한줄", after: "", direction: -1))
         XCTAssertNil(CursorLine.offset(before: nil, after: "\n다음", direction: 1))
     }
+    func testMovingUpDoesNotRequireContextAfterCursor() {
+        XCTAssertEqual(CursorLine.offset(before: "가나다\nab", after: nil, direction: -1), -4)
+        XCTAssertNil(CursorLine.offset(before: "가나다\nab", after: nil, direction: 1))
+    }
+
 }

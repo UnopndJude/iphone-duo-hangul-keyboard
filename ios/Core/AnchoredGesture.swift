@@ -73,3 +73,29 @@ public struct AnchoredGesture {
     }
     public mutating func cancel() { gesture.cancel(); key = nil; horizontalDirection = nil; corner = nil; compoundVowel = nil }
 }
+
+/// Finished contacts wait for earlier contacts, including cancelled contacts.
+public struct OrderedTouchActions<ID: Hashable, Action> {
+    private struct Entry {
+        let id: ID
+        var finished = false
+        var action: Action?
+    }
+    private var entries: [Entry] = []
+    public init() {}
+    public var isEmpty: Bool { entries.isEmpty }
+    public mutating func begin(_ id: ID) {
+        guard !entries.contains(where: { $0.id == id }) else { return }
+        entries.append(Entry(id: id))
+    }
+    public mutating func finish(_ id: ID, action: Action?) -> [Action] {
+        guard let index = entries.firstIndex(where: { $0.id == id }) else { return [] }
+        entries[index].finished = true
+        entries[index].action = action
+        var ready: [Action] = []
+        while entries.first?.finished == true {
+            if let action = entries.removeFirst().action { ready.append(action) }
+        }
+        return ready
+    }
+}

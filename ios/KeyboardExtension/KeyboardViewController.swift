@@ -35,9 +35,10 @@ final class KeyboardViewController: UIInputViewController {
             self.refresh()
         }
         keyboard.onMoveLine = { [weak self] steps in
-            guard let self else { return }
-            self.session.moveLine(by: steps, in: self.document)
+            guard let self else { return false }
+            let moved = self.session.moveLine(by: steps, in: self.document)
             self.refresh()
+            return moved
         }
         keyboard.onDismiss = { [weak self] in
             guard let self else { return }
@@ -62,7 +63,7 @@ final class KeyboardViewController: UIInputViewController {
         // create a shrinking feedback loop during layout).
         let screenHeight = view.window?.windowScene?.screen.bounds.height ?? 844
         let bottom = view.safeAreaInsets.bottom
-        let desiredHeight = KeyboardSizing.contentHeight(screenHeight: screenHeight, bottomInset: bottom) + bottom
+        let desiredHeight = KeyboardSizing.contentHeight(screenHeight: screenHeight, bottomInset: bottom, screenWidth: view.bounds.width) + bottom
         if heightConstraint?.constant != desiredHeight { heightConstraint?.constant = desiredHeight }
         if lastLayoutSize != view.bounds.size {
             keyboard.cancelGesture()
@@ -73,7 +74,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
-        if session.synchronize(with: document) { keyboard.cancelGesture() }
+        if session.synchronize(with: document), !keyboard.isCursorDragging { keyboard.cancelGesture() }
         refresh()
     }
 
@@ -85,7 +86,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
-        if session.synchronize(with: document) { keyboard.cancelGesture() }
+        if session.synchronize(with: document), !keyboard.isCursorDragging { keyboard.cancelGesture() }
         refresh()
     }
 
@@ -116,7 +117,7 @@ final class KeyboardViewController: UIInputViewController {
 
     private func showHelp() {
         session.finish(in: document)
-        let help = UIAlertController(title: "한글·영어 입력 방법", message: "왼쪽 원은 자음, 오른쪽 원은 모음입니다. 원 안의 글자에서 시작하세요.\n\nㅇ: 탭 ㅇ / 좌우 ㅎ / 위 6 / 아래 7\nㅈ: 탭 ㅈ / 위 ㅉ / 좌우 ㅊ / 아래 ~\nㄴ: 탭 ㄴ / 아래 ㄷ / 위 ㄸ / 좌우 ㅌ\nㅣ: 탭 ㅣ / 오른쪽 ㅏ / 왼쪽 ㅓ / 위 ㅗ / 아래 ㅜ\n\n··는 방향으로만 입력합니다. ㅒ: ·· 또는 ㅡ에서 오른쪽으로 밀고 손을 떼지 않은 채 왼쪽으로 되돌리기. ㅖ: 왼쪽으로 밀고 오른쪽으로 되돌리기. ㅑ·ㅕ 후 가운데 ㅣ를 탭해도 됩니다.\n\n영어는 하단 ABC로 전환합니다. 글자를 위로 밀면 대문자, 아래로 밀면 키 오른쪽 아래에 표시된 숫자·기호가 입력됩니다. ⇧는 한 글자 대문자, 길게 누르면 대문자 고정입니다. 넓은 화면에서는 QWERTY가 좌우로 나뉩니다. 한글 버튼으로 돌아옵니다.\n\n자음 원의 빈 방향으로 숫자를 입력합니다. ㄹ 위 1 / 왼쪽 2 / 오른쪽 3 / 아래 4, ㄱ 아래 5, ㅇ 위 6 / 아래 7, ㅅ 왼쪽 8 / 오른쪽 9 / 아래 0. 123에서도 입력합니다. ~도 123 첫 페이지에서 고를 수 있습니다.\n\n모음 원에서 모음과 기호가 번갈아 배치됩니다. 기호: . 탭 마침표 / 왼쪽 쉼표 / 오른쪽 _ / 위·아래 따옴표. ? 탭 물음표 / 위 느낌표 / 오른쪽 -. / 탭 슬래시 / 왼쪽 @ / 오른쪽 =. 중앙은 ㅇ·ㅣ입니다. 원 밖과 중앙 둘레의 좁은 경계에서는 시작할 수 없습니다. 시작한 뒤에는 길게 밀어도 입력됩니다. ··와 ㅡ의 좌우 반전은 ㅒ·ㅖ를 입력합니다. 다른 동작은 시작점으로 돌아와 놓으면 취소합니다.", preferredStyle: .alert)
+        let help = UIAlertController(title: "한글·영어 입력 방법", message: "왼쪽 원은 자음, 오른쪽 원은 모음입니다. 원 안의 글자에서 시작하세요.\n\nㅇ: 탭 ㅇ / 좌우 ㅎ / 위 6 / 아래 7\nㅈ: 탭 ㅈ / 위 ㅉ / 좌우 ㅊ / 아래 ~\nㄴ: 탭 ㄴ / 아래 ㄷ / 위 ㄸ / 좌우 ㅌ\nㅣ: 탭 ㅣ / 오른쪽 ㅏ / 왼쪽 ㅓ / 위 ㅗ / 아래 ㅜ\n\n··는 방향으로만 입력합니다. ㅒ: ·· 또는 ㅡ에서 오른쪽으로 밀고 손을 떼지 않은 채 왼쪽으로 되돌리기. ㅖ: 왼쪽으로 밀고 오른쪽으로 되돌리기. ㅑ·ㅕ 후 가운데 ㅣ를 탭해도 됩니다.\n\n영어는 하단 ABC로 전환합니다. 글자를 위로 밀면 대문자, 아래로 밀면 키 오른쪽 아래에 표시된 숫자·기호가 입력됩니다. ⇧는 한 글자 대문자, 길게 누르면 대문자 고정입니다. 넓은 화면에서는 QWERTY가 좌우로 나뉩니다. 한글 버튼으로 돌아옵니다.\n\n좁은 화면: ㅅ 왼쪽 1 / 아래 2 / 오른쪽 3, ㅇ 왼쪽 4 / 아래 5 / 오른쪽 6, ㅎ 왼쪽 7 / 아래 8 / 오른쪽 9 / 위 0. ㄱ 아래 #, ㄹ 위 ^ / 왼쪽 = / 아래 _ / 오른쪽 -. 넓은 화면은 자음 원의 빈 방향으로 숫자를 입력합니다. ㄹ 위 1 / 왼쪽 2 / 오른쪽 3 / 아래 4, ㄱ 아래 5, ㅇ 위 6 / 아래 7, ㅅ 왼쪽 8 / 오른쪽 9 / 아래 0. 123에서도 입력합니다. ~도 123 첫 페이지에서 고를 수 있습니다.\n\n모음 원에서 모음과 기호가 번갈아 배치됩니다. 기호: . 탭 마침표 / 왼쪽 쉼표 / 오른쪽 _ / 위·아래 따옴표. ? 탭 물음표 / 위 느낌표 / 오른쪽 -. / 탭 슬래시 / 왼쪽 @ / 오른쪽 =. 중앙은 ㅇ·ㅣ입니다. 원 밖과 중앙 둘레의 좁은 경계에서는 시작할 수 없습니다. 시작한 뒤에는 길게 밀어도 입력됩니다. ··와 ㅡ의 좌우 반전은 ㅒ·ㅖ를 입력합니다. 다른 동작은 시작점으로 돌아와 놓으면 취소합니다.", preferredStyle: .alert)
         help.addAction(UIAlertAction(title: "닫기", style: .default))
         present(help, animated: true)
     }

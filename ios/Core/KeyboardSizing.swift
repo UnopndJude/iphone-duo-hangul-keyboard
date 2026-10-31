@@ -3,10 +3,10 @@ import CoreGraphics
 /// Heights are in points, not physical pixels. Touch geometry takes priority
 /// over the preferred screen fraction on short displays.
 public enum KeyboardSizing {
-    public static func contentHeight(screenHeight: CGFloat, bottomInset: CGFloat) -> CGFloat {
+    public static func contentHeight(screenHeight: CGFloat, bottomInset: CGFloat, screenWidth: CGFloat = 600) -> CGFloat {
         guard screenHeight.isFinite, screenHeight > 0, bottomInset.isFinite else { return 286 }
         let bottom = max(0, bottomInset)
-        return max(220, min(320 - bottom, screenHeight * 0.33 - bottom))
+        return max(screenWidth < 600 ? 238 : 220, min(320 - bottom, screenHeight * 0.33 - bottom))
     }
 
     public struct Metrics {

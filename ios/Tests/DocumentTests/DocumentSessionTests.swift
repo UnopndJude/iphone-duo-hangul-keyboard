@@ -518,4 +518,15 @@ final class DocumentSessionTests: XCTestCase {
         XCTAssertEqual(d.cursor, 0)
     }
 
+    func testLineMoveReportsUnavailableInsteadOfClaimingSuccess() {
+        let d = TestDocument(), s = DocumentSession()
+        d.text = "한줄"; d.cursor = d.text.count
+        XCTAssertFalse(s.moveLine(by: -1, in: d))
+        XCTAssertEqual(d.cursor, d.text.count)
+        d.text = "앞줄\n뒷줄"; d.cursor = d.text.count
+        XCTAssertTrue(s.moveLine(by: -1, in: d))
+        XCTAssertEqual(d.cursor, 2)
+        XCTAssertFalse(s.moveLine(by: -1, in: d))
+    }
+
 }
