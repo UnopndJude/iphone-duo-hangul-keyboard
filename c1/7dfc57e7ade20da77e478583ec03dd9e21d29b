@@ -1,0 +1,66 @@
+ios/Core/KeyboardSizing.swift
+  s_a5e1472697f7cb::t_7288201bd9b8f4 6,9
+ios/Tests/CoreTests/SpaceCursorGestureTests.swift
+  s_a5e1472697f7cb::t_60611612bc3424 41-45
+ios/SharedUI/KeyboardView.swift
+  s_a5e1472697f7cb::t_541a586881b405 295-297
+  s_a5e1472697f7cb::t_7288201bd9b8f4 294,341,343-344,351
+  s_a5e1472697f7cb::t_24771a09f2da4b 419,814-822,838-841
+  s_a5e1472697f7cb::t_209ac88e533d5e 4,8-9,39-47,220,231-233,301,350,358-372,376-381,386,390,393-411,422,425,568,588,618,723,734,754,759,895,897
+  s_a5e1472697f7cb::t_c96715bba0900a 263-264,342,352,682-685
+  s_a5e1472697f7cb::t_21f018ad5e56b0 291-293,298-300,329,584-587,601,614-617,719-722,731-733,750-753,755-758,782,789,809-813,885-894,896
+ios/Tests/CoreTests/OrderedTouchActionsTests.swift
+  s_a5e1472697f7cb::t_20b293a67926a5 1-39
+ios/Tests/DocumentTests/DocumentSessionTests.swift
+  s_a5e1472697f7cb::t_60611612bc3424 521-531
+ios/Core/AnchoredGesture.swift
+  s_a5e1472697f7cb::t_209ac88e533d5e 76-101
+ios/Tests/CoreTests/KeyboardSizingTests.swift
+  s_a5e1472697f7cb::t_7288201bd9b8f4 110,119,134,136-137
+  s_a5e1472697f7cb::t_541a586881b405 105,112,114,118
+  s_a5e1472697f7cb::t_75e72eced2c7c8 84-85,106,108-109,111,113,115,117,120-133,138-146
+  s_a5e1472697f7cb::t_24771a09f2da4b 86-100
+  s_a5e1472697f7cb::t_657329b9e3a2cf 101-104,107,116,135
+ios/App/HostViewController.swift
+  s_a5e1472697f7cb::t_7288201bd9b8f4 145
+  s_a5e1472697f7cb::t_fdf30115ce0502 212
+  s_a5e1472697f7cb::t_7fa9608bce9e35 100-101,111,114
+README.md
+  s_a5e1472697f7cb::t_c96715bba0900a 64
+  s_a5e1472697f7cb::t_b0c907ba892bc8 12,22
+  s_a5e1472697f7cb::t_3aa7bea1485926 3,61-62,67-68
+  s_a5e1472697f7cb::t_541a586881b405 60
+  s_a5e1472697f7cb::t_fdf30115ce0502 70-81
+  s_a5e1472697f7cb::t_84ebb1a842624e 23,63,65-66,69
+ios/Config/Shared.xcconfig
+  s_a5e1472697f7cb::t_20b293a67926a5 7
+ios/Core/JoystickMapping.swift
+  s_a5e1472697f7cb::t_7288201bd9b8f4 80-82,85,90
+  s_a5e1472697f7cb::t_24771a09f2da4b 26-38,70
+  s_a5e1472697f7cb::t_541a586881b405 71-77,83-84
+  s_a5e1472697f7cb::t_64ae063fc17629 59-69,78-79,86-89,91
+ios/KeyboardExtension/KeyboardViewController.swift
+  s_a5e1472697f7cb::t_7288201bd9b8f4 66
+  s_a5e1472697f7cb::t_fdf30115ce0502 120
+  s_a5e1472697f7cb::t_1cd14dbd97e28f 38-39,41,77,89
+ios/Core/SpaceCursorGesture.swift
+  s_a5e1472697f7cb::t_b59414e16aac25 55,64
+ios/DocumentBridge/DocumentSession.swift
+  s_a5e1472697f7cb::t_56a0ee999a8675 102-104,106,113,118,120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c17dfc57e7ade20da77e478583ec03dd9e21d29b",
+  "prompts": {},
+  "sessions": {
+    "s_a5e1472697f7cb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a166a2-9f2b-75c3-b30d-57ae412b986c",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "UnopndJude <101383622+UnopndJude@users.noreply.github.com>"
+    }
+  }
+}
